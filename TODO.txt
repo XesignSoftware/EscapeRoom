@@ -1,0 +1,12 @@
+﻿TODO: 
+- [game] Handle the question types
+- [game] Handle question responses (correct/wrong)
+- [engine] Implement image/video support (quests can/will have images)
+            Image: DONE
+            Local video:
+            Online video:
+            YouTube video:
+- [all] Implement UI control sizing customizability
+- [all] Implement a game ending
+- [all] Implement automating the game with customizations
+- [all] Code cleanup (?)

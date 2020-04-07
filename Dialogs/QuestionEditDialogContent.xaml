@@ -1,0 +1,66 @@
+﻿<UserControl x:Name="main" x:Class="EscapeRoom.Dialogs.QuestionEditDialogContent"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EscapeRoom.Dialogs"
+             xmlns:xezui_controls="clr-namespace:XeZrunner.UI.Controls;assembly=XeZrunner.UI" xmlns:buttons="clr-namespace:XeZrunner.UI.Controls.Buttons;assembly=XeZrunner.UI" xmlns:popups="clr-namespace:XeZrunner.UI.Popups;assembly=XeZrunner.UI"
+             mc:Ignorable="d" 
+             d:DesignWidth="800" Foreground="{DynamicResource Foreground}">
+    <Grid Margin="5">
+
+        <StackPanel>
+
+            <TextBlock>Question type</TextBlock>
+            <StackPanel x:Name="modify_TypeRadioButtonStackPanel" Margin="0,8">
+                <xezui_controls:RadioButton Text="Simple text question" Tag="Text" IsActiveChanged="RadioButton_IsActiveChanged" />
+                <xezui_controls:RadioButton Text="Image + text question" Tag="Image" IsActiveChanged="RadioButton_IsActiveChanged" />
+            </StackPanel>
+
+            <StackPanel x:Name="modify_mediaStackPanel" Margin="0,8">
+                <TextBlock Text="Media" />
+                <Grid x:Name="mediaContainer" Margin="0" MaxWidth="250" />
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <xezui_controls:TextField x:Name="media_pathTextField" Title="Enter media path" TextChanged="media_pathTextField_TextChanged" />
+                    <buttons:ActionButton x:Name="media_browseButton" Grid.Column="1" Icon="&#xe838;" Text="BROWSE..." VerticalAlignment="Bottom" Margin="0,0,0,5" Height="34" Click="media_browseButton_Click" />
+                </Grid>
+            </StackPanel>
+
+            <xezui_controls:TextField x:Name="modify_TitleBox" Title="Question title" />
+
+            <xezui_controls:TextField x:Name="modify_DescBox" Title="Question description" AcceptsReturn="True" />
+
+            <StackPanel x:Name="modify_inputStackPanel" Margin="0,8">
+                <TextBlock Text="Question input / choices" />
+
+                <StackPanel x:Name="modify_inputRadioButtonSP" Margin="0,8">
+                    <xezui_controls:RadioButton x:Name="modify_inputRadioButton" Text="Szövegbevitel" IsActiveChanged="InputRadioButton_IsActiveChanged" Tag="Input" />
+                    <xezui_controls:RadioButton x:Name="modify_choicesRadioButton" Text="Választási lehetőségek..." IsActiveChanged="InputRadioButton_IsActiveChanged" Tag="Choices"/>
+                </StackPanel>
+
+                <xezui_controls:TextField x:Name="modify_inputTextField" Title="Solution:" />
+
+                <Grid x:Name="modify_choicesGrid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <xezui_controls:TextField x:Name="modify_choicesTextField" Title="Válaszási lehetőségek listája:" AcceptsReturn="True" />
+                    <buttons:ActionButton x:Name="modify_choicesAddButton" Grid.Column="1" Text="ADD" Icon="&#xe710;" VerticalAlignment="Bottom" Margin="0,0,0,5"
+                                          Click="modify_choicesAddButton_Click" />
+                </Grid>
+            </StackPanel>
+
+        </StackPanel>
+
+        <buttons:FABButton x:Name="tryButton" Icon="&#xe768;" HorizontalAlignment="Right" VerticalAlignment="Top" Click="tryButton_Click" />
+
+        <popups:ContentDialogHost x:Name="contentdialogHost" />
+
+    </Grid>
+</UserControl>

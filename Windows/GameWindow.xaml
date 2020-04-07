@@ -1,0 +1,71 @@
+﻿<Window x:Class="EscapeRoom.Windows.GameWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EscapeRoom.Windows"
+        xmlns:controls="clr-namespace:XeZrunner.UI.Controls;assembly=XeZrunner.UI"
+        xmlns:xz_controlfx="clr-namespace:XeZrunner.UI.ControlEffects;assembly=XeZrunner.UI"
+        xmlns:window_components="clr-namespace:XeZrunner.UI.Controls.Window_components;assembly=XeZrunner.UI" xmlns:buttons="clr-namespace:XeZrunner.UI.Controls.Buttons;assembly=XeZrunner.UI"
+        mc:Ignorable="d"
+        Title="GameWindow" Height="600" Width="1030" WindowStartupLocation="Manual" Left="0" Top="0" AllowsTransparency="False" WindowStyle="None" ResizeMode="NoResize" WindowState="Maximized"
+        Background="{DynamicResource Background}" Foreground="{DynamicResource Foreground}" xz_controlfx:PointerTracker.Enabled="True"
+        Loaded="Window_Loaded" PreviewKeyUp="Window_PreviewKeyUp">
+
+    <Grid>
+        <Grid x:Name="contentGrid" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition x:Name="rowdef_Icon" />
+                <RowDefinition x:Name="rowdef_Title" Height="Auto" />
+                <RowDefinition x:Name="rowdef_Desc" Height="Auto" />
+                <RowDefinition x:Name="rowdef_Input" Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid x:Name="mediaContainer" HorizontalAlignment="Center" Margin="0,0,0,40" MaxWidth="700" MaxHeight="400">
+
+            </Grid>
+
+            <TextBlock x:Name="title_TextBlock" FontSize="78" Text="Q Title" HorizontalAlignment="Center" Grid.Row="1" />
+
+            <TextBlock x:Name="desc_TextBlock" FontSize="32" Text="Q Description" Grid.Row="2" HorizontalAlignment="Center" />
+
+            <controls:TextField x:Name="input_TextField" Grid.Row="3" Title="Írd be a választ:" FontSize="24" Margin="420,28,420,0" PreviewKeyUp="input_TextField_PreviewKeyUp" Visibility="Collapsed" />
+
+            <Grid x:Name="input_choicesGrid" Grid.Row="3" Margin="0,28,0,0" MaxWidth="450" Visibility="Visible" >
+                <Border BorderBrush="{DynamicResource Foreground_Secondary}" BorderThickness="1" Opacity="0.1" />
+                <StackPanel x:Name="input_choicesStackPanel" Orientation="Vertical">
+                    <buttons:NavMenuItem Icon="" />
+                    <buttons:NavMenuItem Icon="" />
+                    <buttons:NavMenuItem Icon="" />
+                    <buttons:NavMenuItem Icon="" />
+                </StackPanel>
+            </Grid>
+
+        </Grid>
+
+        <Grid x:Name="videoGrid" Background="{DynamicResource Background}" Visibility="Collapsed">
+            <StackPanel VerticalAlignment="Center">
+                <Grid>
+                    <Ellipse x:Name="ellipse" Fill="#4CAF50" Width="180" Height="180" />
+                    <TextBlock x:Name="textBlock" Text="&#xe081;" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="90" FontFamily="/Fonts/#Segoe MDL2 Assets" />
+                </Grid>
+
+                <TextBlock FontSize="72" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,40,0,0">Helyes válasz!</TextBlock>
+            </StackPanel>
+        </Grid>
+
+        <Grid x:Name="progress" Visibility="Hidden">
+            <Rectangle Fill="{DynamicResource Background}" Opacity="0.85" />
+            <controls:ArcProgress />
+        </Grid>
+
+        <window_components:TitlebarControl x:Name="titleBar" Background="{DynamicResource Accent}" Theme="Dark" AppTitle="" MenuButtonVisibility="Collapsed" MinimizeButtonVisibility="Collapsed" MaximizeButtonVisibility="Visible" UseWindowControlBehavior="False"
+                                           MinimizeButton_Click="titleBar_MinimizeButton_Click"
+                                           MaximizeButton_Click="titleBar_MaximizeButton_Click"
+                                           CloseButton_Click="titleBar_CloseButton_Click" />
+
+        <Grid Height="32" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,0,135,0" Visibility="{Binding ElementName=titleBar, Path=Visibility}" >
+            <TextBlock VerticalAlignment="Center" Text="debug mode" Foreground="White" Opacity="0.65" />
+        </Grid>
+    </Grid>
+</Window>

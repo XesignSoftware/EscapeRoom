@@ -1,0 +1,127 @@
+﻿<Window x:Name="main" x:Class="EscapeRoom.ControllerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xezui_controls="clr-namespace:XeZrunner.UI.Controls;assembly=XeZrunner.UI"
+        xmlns:xezui_buttons="clr-namespace:XeZrunner.UI.Controls.Buttons;assembly=XeZrunner.UI"
+        xmlns:xezui_fx="clr-namespace:XeZrunner.UI.ControlEffects;assembly=XeZrunner.UI"
+        xmlns:local="clr-namespace:EscapeRoom"
+        xmlns:popups="clr-namespace:XeZrunner.UI.Popups;assembly=XeZrunner.UI"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        Title="EscapeRoom" Height="800" Width="1390" MinHeight="500" MinWidth="800" Background="{DynamicResource Background}" Foreground="{DynamicResource Foreground}"
+        Loaded="Window_Loaded" xezui_fx:PointerTracker.Enabled="True" PreviewKeyUp="Window_PreviewKeyUp" PreviewKeyDown="Window_PreviewKeyDown" Closing="Window_Closing">
+    <Grid>
+
+        <Grid>
+
+            <Grid Margin="160,30" VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition x:Name="debugRow" Height="Auto" />
+                    <RowDefinition x:Name="tipsRow" Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Kérdések listája: " Padding="20,0,0,10" />
+
+                <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="{DynamicResource Background_Secondary}">
+                    <StackPanel x:Name="questionListStackPanel">
+                        <local:QuestionControl />
+                        <local:QuestionControl />
+                        <local:QuestionControl />
+                        <local:QuestionControl />
+                        <local:QuestionControl />
+                    </StackPanel>
+                </ScrollViewer>
+
+                <Grid Grid.Row="2" Margin="0,8,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="1">
+                        <xezui_buttons:CircularActionButton x:Name="newButton" Icon="&#xe109;" Text="Új kérdés" Click="newButton_Click" />
+                        <xezui_buttons:CircularActionButton x:Name="debugButton" Icon="&#xe9d9;" Text="Debug" Click="debugButton_Click" Margin="4,0,0,0" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
+                        <xezui_buttons:CircularActionButton x:Name="debugOverlayButton" Icon="&#xe74c;" Text="Kérdés tesztelése" Click="debugOverlayButton_Click" />
+                    </StackPanel>
+
+                    <TextBlock x:Name="shiftdeletewarningTextBlock" Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,4,0,8">
+                        <Run Foreground="#f44336" FontWeight="Bold">Figyelem!</Run>
+                        <Run x:Name="warningText">A </Run>
+                        <Run Foreground="{DynamicResource Accent}">Shift</Run>
+                        <Run>gomb tartása közben </Run>
+                        <Run Foreground="#f44336" FontWeight="Bold">azonnal</Run>
+                        <Run>törlődnek az elemek!</Run>
+                    </TextBlock>
+
+                </Grid>
+
+                <StackPanel Grid.Row="3" Margin="0,10,0,0">
+
+                    <xezui_buttons:ActionButton x:Name="debug_ReadQuestsJSONFile" Icon="&#xe1ef;" Text="(DEBUG) Read Quests JSON file" Click="debug_ReadQuestsJSONFile_Click" />
+                    <xezui_buttons:ActionButton x:Name="debug_ClearJSON" MouseOverColor="{DynamicResource Red}" Icon="&#xe74d;" Text="(DEBUG) Clear Quests JSON file" Click="debug_ClearJSON_Click" />
+
+                </StackPanel>
+
+                <ScrollViewer Grid.Row="4" Margin="0,14,0,0" Padding="5" VerticalScrollBarVisibility="Auto">
+                    <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource Foreground_Secondary}">
+                    
+                    <Bold>Hogyan hozzunk létre kérdést?</Bold>
+                    <LineBreak />
+                    Kattintsunk az <Bold Foreground="{DynamicResource Accent}">Új kérdés</Bold> gombra. Adjuk meg a kívánt beállításokat,
+                    majd kattintsunk a <Bold Foreground="{DynamicResource Accent}">Létrehozás</Bold> gombra a kérdés elmentéséhez.
+                    
+                    <LineBreak/>
+                    <LineBreak/>
+                    
+                    <Bold>Hogyan módosítunk kérdést?</Bold>
+                    <LineBreak />
+                    Kattintsunk rá az egyik kérdésre. Adjuk meg a kívánt beállításokat, majd kattintsunk a 
+                    <Bold Foreground="{DynamicResource Accent}">Mentés</Bold> gombra a kérdés elmentéséhez.
+
+                    </TextBlock>
+                </ScrollViewer>
+            </Grid>
+
+            <TextBlock Foreground="{DynamicResource Foreground_Secondary}" Opacity="0.15" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <Run FontFamily="/Fonts/#Segoe MDL2 Assets" Text="&#xe7fc;" />
+                    EscapeRoom by xezrunner
+                <LineBreak />
+                <TextBlock x:Name="versionString" Padding="18.25,0,0,0" Text="version number" Margin="0,0,0,0" />
+                <LineBreak/>
+                <Run FontFamily="/Fonts/#Segoe MDL2 Assets" Text="&#xe74c;" />
+                    powered by XesignSoftware UI
+                <LineBreak/>
+                    <TextBlock Padding="17.60,0,0,0">&amp; Xesign Game Engine</TextBlock>
+            </TextBlock>
+
+        </Grid>
+
+        <Grid x:Name="splashGrid" Background="{DynamicResource Background}" Visibility="Hidden">
+
+            <TextBlock FontSize="68" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Run FontWeight="Medium">Escape</Run>
+                <TextBlock FontSize="68" FontWeight="UltraLight" Foreground="{DynamicResource Foreground_Secondary}" Margin="-15,0,0,0">Room</TextBlock>
+            </TextBlock>
+
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,165,0,0" Opacity="0.3">
+                <TextBlock FontSize="32" FontFamily="/Fonts/#Segoe MDL2 Assets" Text="&#xe74c;" VerticalAlignment="Center" />
+                <TextBlock FontSize="32" Margin="15,0,0,0">Powered by Xesign Game Engine</TextBlock>
+            </StackPanel>
+            
+        </Grid>
+
+        <popups:ContentDialogHost x:Name="contentDialogHost" />
+
+    </Grid>
+</Window>
