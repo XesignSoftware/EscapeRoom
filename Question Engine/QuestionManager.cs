@@ -117,9 +117,7 @@ namespace EscapeRoom.QuestionHandling
             var quest = list[oldID];
             var tbreplacedQuest = list[newID];
 
-            if (newID == 0)
-                list.Insert(newID, quest);
-            else if (newID < oldID)
+            if (newID == 0 || newID < oldID)
                 list.Insert(newID, quest);
             else if (newID > oldID)
                 list.Insert(newID + 1, quest);
@@ -134,7 +132,10 @@ namespace EscapeRoom.QuestionHandling
 
             SerializeQuestsJSON(list);
 
+            /* Don't invoke QuestionsChanged, as we want to manually re-arrange the items in the controller
+             * for performance!
             //QuestionsChanged?.Invoke(null, null);
+            */
         }
 
         public event EventHandler ModifyFailed;
