@@ -103,7 +103,6 @@ namespace EscapeRoom.QuestionHandling
         public void ModifyQuestion(Question newQuestion)
         {
             List<Question> list = ReadQuestsListFromJSON();
-            Question targetQuestion = null;
 
             // find the Question to modify
             int counter = 0;
@@ -115,7 +114,7 @@ namespace EscapeRoom.QuestionHandling
                 counter++;
             }
 
-            targetQuestion = list[counter];
+            Question targetQuestion = list[counter];
 
             if (targetQuestion == null)
             {
@@ -125,7 +124,7 @@ namespace EscapeRoom.QuestionHandling
 
             // Modify the Question
             list.RemoveAt(counter);
-            list.Add(newQuestion);
+            list.Insert(counter, newQuestion);
 
             // Serialize the list
             SerializeQuestsJSON(list);
