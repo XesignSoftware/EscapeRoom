@@ -34,6 +34,8 @@ namespace EscapeRoom.QuestionHandling
             return ReadQuestsListFromJSON().Count;
         }
 
+        public event EventHandler QuestionsChanged;
+
         public void AddQuestion(Question Question)
         {
             List<Question> list = ReadQuestsListFromJSON();
@@ -49,6 +51,9 @@ namespace EscapeRoom.QuestionHandling
 
             // Serialize the list into JSON
             SerializeQuestsJSON(list);
+
+            // call event
+            QuestionsChanged?.Invoke(null, null);
         }
 
         public event EventHandler RemoveFailed;
@@ -80,6 +85,9 @@ namespace EscapeRoom.QuestionHandling
 
             // Serialize the list into JSON
             SerializeQuestsJSON(list);
+
+            QuestionsChanged?.Invoke(null, null);
+        }
         }
 
         public void RemoveQuestion(Question question)
@@ -121,6 +129,8 @@ namespace EscapeRoom.QuestionHandling
 
             // Serialize the list
             SerializeQuestsJSON(list);
+
+            QuestionsChanged?.Invoke(null, null);
         }
 
         public void DuplicateQuestion()
@@ -139,6 +149,7 @@ namespace EscapeRoom.QuestionHandling
         public void ClearQuestionList()
         {
             SerializeQuestsJSON(new List<Question>());
+            QuestionsChanged?.Invoke(null, null);
         }
 
         public void SerializeQuestsJSON(List<Question> list)
@@ -231,6 +242,8 @@ namespace EscapeRoom.QuestionHandling
                     QuestionDescription = "Ez egy nagyon fontos kérdés - ne rontsd el!"
                 });
             }
+
+            QuestionsChanged?.Invoke(null, null);
         }
     }
 }
