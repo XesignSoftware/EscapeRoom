@@ -98,7 +98,7 @@
                 </Grid>
             </Grid>
 
-            <xezui_fx:ControlEffect Grid.ColumnSpan="2" Click="Button_Click" />
+            <xezui_fx:ControlEffect Grid.ColumnSpan="5" Click="Button_Click" />
 
             <Grid x:Name="orderingGrid" Grid.Column="2">
                 <Grid.RowDefinitions>
