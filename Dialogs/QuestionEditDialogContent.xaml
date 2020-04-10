@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:EscapeRoom.Dialogs"
              xmlns:xezui_controls="clr-namespace:XeZrunner.UI.Controls;assembly=XeZrunner.UI" xmlns:buttons="clr-namespace:XeZrunner.UI.Controls.Buttons;assembly=XeZrunner.UI" xmlns:popups="clr-namespace:XeZrunner.UI.Popups;assembly=XeZrunner.UI"
              mc:Ignorable="d" 
-             d:DesignWidth="800" Foreground="{DynamicResource Foreground}">
+             d:DesignWidth="800" Foreground="{DynamicResource Foreground}"
+             Loaded="main_Loaded">
     <Grid Margin="5">
 
         <StackPanel>
@@ -31,7 +32,7 @@
                 </Grid>
             </StackPanel>
 
-            <xezui_controls:TextField x:Name="modify_TitleBox" Title="Question title" />
+            <xezui_controls:TextField x:Name="modify_TitleBox" Title="Question title" Focusable="True" />
 
             <xezui_controls:TextField x:Name="modify_DescBox" Title="Question description" AcceptsReturn="True" />
 

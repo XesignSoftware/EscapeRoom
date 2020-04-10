@@ -399,5 +399,10 @@ namespace EscapeRoom.Dialogs
 
             gameWindow.Show();
         }
+
+        private void main_Loaded(object sender, RoutedEventArgs e)
+        {
+            modify_TitleBox.Focus();
+        }
     }
 }
