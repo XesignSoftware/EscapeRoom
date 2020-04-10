@@ -42,6 +42,14 @@ namespace EscapeRoom
 
             // Init QuestionHandler
             QuestionManager = new QuestionManager();
+            QuestionManager.QuestionsChanged += QuestionManager_QuestionsChanged;
+        }
+
+        private void QuestionManager_QuestionsChanged(object sender, EventArgs e)
+        {
+            LoadQuestions();
+        }
+
         private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             contentDialogHost.TextContentDialog("An error has occured!", e.Exception.Message, true, "Continue anyway");
@@ -151,7 +159,7 @@ namespace EscapeRoom
             }
 
             // reload questions
-            LoadQuestions();
+
         }
 
         private async void Control_Click(object sender, EventArgs e)
@@ -190,7 +198,7 @@ namespace EscapeRoom
             }
 
             QuestionManager.RemoveQuestion(targetQuestion);
-            LoadQuestions(); // reload questions list
+            // reload questions list
         }
 
         private async void newButton_Click(object sender, RoutedEventArgs e)
@@ -205,7 +213,7 @@ namespace EscapeRoom
                     return;
                 }
                 QuestionManager.DuplicateQuestion();
-                LoadQuestions();
+
             }
         }
 
@@ -294,7 +302,7 @@ namespace EscapeRoom
         private void debug_ClearJSON_Click(object sender, RoutedEventArgs e)
         {
             QuestionManager.ClearQuestionList();
-            LoadQuestions();
+
         }
     }
 }
