@@ -114,7 +114,7 @@
                 <TextBlock FontSize="68" FontWeight="UltraLight" Foreground="{DynamicResource Foreground_Secondary}" Margin="-15,0,0,0">Room</TextBlock>
             </TextBlock>
 
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,165,0,0" Opacity="0.3">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,150,0,0" Opacity="0.3">
                 <TextBlock FontSize="32" FontFamily="/Fonts/#Segoe MDL2 Assets" Text="&#xe74c;" VerticalAlignment="Center" />
                 <TextBlock FontSize="32" Margin="15,0,0,0">Powered by Xesign Game Engine</TextBlock>
             </StackPanel>

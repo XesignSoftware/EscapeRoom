@@ -213,9 +213,6 @@ namespace EscapeRoom
                 else // modifying an existing question
                     QuestionManager.ModifyQuestion(newQuestion);
             }
-
-            // reload questions
-
         }
 
         private async void Control_Click(object sender, EventArgs e)
@@ -254,7 +251,6 @@ namespace EscapeRoom
             }
 
             QuestionManager.RemoveQuestion(targetQuestion);
-            // reload questions list
         }
 
         private async void newButton_Click(object sender, RoutedEventArgs e)
