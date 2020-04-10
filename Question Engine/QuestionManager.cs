@@ -88,6 +88,18 @@ namespace EscapeRoom.QuestionHandling
 
             QuestionsChanged?.Invoke(null, null);
         }
+
+        public void RemoveLastQuestion()
+        {
+            List<Question> list = ReadQuestsListFromJSON();
+
+            // find ID of last question
+            if (list.Count > 1)
+                RemoveQuestion(list.Count - 1);
+            else if (list.Count == 1)
+                RemoveQuestion(0);
+            else
+                throw new Exception("No question to delete!");
         }
 
         public void RemoveQuestion(Question question)

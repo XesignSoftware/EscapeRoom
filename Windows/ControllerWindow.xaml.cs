@@ -236,6 +236,11 @@ namespace EscapeRoom
                     ThemeManager.Config_SetTheme(ThemeManager.Theme.Dark);
                     ThemeManager.Config_SetAccent(ThemeManager.Accent.Pink);
                 }
+                // Debug shortcuts
+                if (!DebugFeatures)
+                    return;
+                if (e.Key == Key.M)
+                    QuestionManager.RemoveLastQuestion();
             }
 
             if (Keyboard.IsKeyUp(Key.LeftShift))
