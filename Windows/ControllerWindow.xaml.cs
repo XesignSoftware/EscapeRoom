@@ -96,10 +96,27 @@ namespace EscapeRoom
         public void LoadQuestions()
         {
             List<Question> list = QuestionManager.ReadQuestsListFromJSON(); // get Question list
+            List<int> questIDList = new List<int>();
+
+            foreach (Question quest in list)
+                questIDList.Add(quest.QuestID.Value);
+
+            //questIDList.Sort();
 
             // clear StackPanel
             questionListStackPanel.Children.Clear();
 
+            foreach (int questID in questIDList)
+            {
+                QuestionControl control = new QuestionControl(list[questID]); // create new Question control
+                control.Click += Control_Click;
+                control.DeleteClick += Control_DeleteClick;
+                control.PlayClick += Control_PlayClick;
+                control.OrderingClick += Control_OrderingClick;
+                questionListStackPanel.Children.Add(control); // add control to StackPanel
+            }
+
+            /*
             foreach (Question inc in list)
             {
                 QuestionControl control = new QuestionControl(inc); // create new Question control
