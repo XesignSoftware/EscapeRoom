@@ -63,6 +63,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="coldef_Icon" Width="Auto" />
                 <ColumnDefinition x:Name="coldef_Main" />
+                <ColumnDefinition x:Name="coldef_Ordering" Width="Auto" />
                 <ColumnDefinition x:Name="coldef_Play" Width="Auto" />
                 <ColumnDefinition x:Name="coldef_Delete" Width="Auto" />
             </Grid.ColumnDefinitions>
@@ -99,9 +100,19 @@
 
             <xezui_fx:ControlEffect Grid.ColumnSpan="2" Click="Button_Click" />
 
-            <buttons:AppBarButton x:Name="playButton" Grid.Column="2" Icon="&#xe768;" Height="58" Click="playButton_Click" Foreground="{DynamicResource Foreground_Secondary}" />
+            <Grid x:Name="orderingGrid" Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <buttons:AppBarButton x:Name="upButton" Grid.Row="0" Icon="&#xe70e;" Click="orderingButton_Click" Tag="Up" />
+                <buttons:AppBarButton x:Name="downButton"  Grid.Row="1" Icon="&#xe70d;" Click="orderingButton_Click" Tag="Down" />
+            </Grid>
+
+            <buttons:AppBarButton x:Name="playButton" Grid.Column="3" Icon="&#xe768;" Height="58" Click="playButton_Click" Foreground="{DynamicResource Foreground_Secondary}" />
             
-            <buttons:AppBarButton x:Name="deleteButton" Grid.Column="3" Icon="&#xe74d;" Height="58" Click="deleteButton_Click" Foreground="{DynamicResource Foreground_Secondary}" />
+            <buttons:AppBarButton x:Name="deleteButton" Grid.Column="4" Icon="&#xe74d;" Height="58" Click="deleteButton_Click" Foreground="{DynamicResource Foreground_Secondary}" />
 
         </Grid>
     </Button>

@@ -110,6 +110,33 @@ namespace EscapeRoom.QuestionHandling
                 throw new Exception("QuestID is null!");
         }
 
+        public void OrderQuestion(int oldID, int newID)
+        {
+            List<Question> list = ReadQuestsListFromJSON();
+
+            var quest = list[oldID];
+            var tbreplacedQuest = list[newID];
+
+            if (newID == 0)
+                list.Insert(newID, quest);
+            else if (newID < oldID)
+                list.Insert(newID, quest);
+            else if (newID > oldID)
+                list.Insert(newID + 1, quest);
+
+            if (newID < oldID)
+                list.RemoveAt(oldID + 1);
+            else
+                list.RemoveAt(oldID);
+
+            quest.QuestID = list.IndexOf(quest);
+            tbreplacedQuest.QuestID = list.IndexOf(tbreplacedQuest);
+
+            SerializeQuestsJSON(list);
+
+            //QuestionsChanged?.Invoke(null, null);
+        }
+
         public event EventHandler ModifyFailed;
 
         public void ModifyQuestion(Question newQuestion)

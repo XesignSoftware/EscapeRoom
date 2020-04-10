@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using XeZrunner.UI.Controls.Buttons;
 
 namespace EscapeRoom
 {
@@ -37,10 +38,16 @@ namespace EscapeRoom
             Description = inc.QuestionDescription;
         }
 
+        int _ID;
         public int ID
         {
-            get { return int.Parse(ID_TextBlock.Text); }
-            set { ID_TextBlock.Text = value.ToString(); }
+            get { return _ID; }
+            set { _ID = value; ID_TextBlock.Text = value.ToString(); }
+        }
+
+        public int NewID
+        {
+            set { ID_TextBlock.Text = string.Format("(was {0}, will be {1})", ID.ToString(),  value.ToString()); }
         }
 
         public string Type
@@ -64,6 +71,7 @@ namespace EscapeRoom
         public event EventHandler Click;
         public event EventHandler PlayClick;
         public event EventHandler DeleteClick;
+        public event EventHandler<string> OrderingClick;
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -78,6 +86,13 @@ namespace EscapeRoom
         private void playButton_Click(object sender, RoutedEventArgs e)
         {
             PlayClick?.Invoke(Question, null);
+        }
+
+        private void orderingButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (AppBarButton)sender;
+
+            OrderingClick?.Invoke(this, (string)button.Tag);
         }
     }
 }

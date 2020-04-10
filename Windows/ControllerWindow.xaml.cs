@@ -122,9 +122,48 @@ namespace EscapeRoom
                 QuestionControl control = new QuestionControl(inc); // create new Question control
                 control.Click += Control_Click;
                 control.DeleteClick += Control_DeleteClick;
-                control.PlayClick += Control_PlayClick; ;
+                control.PlayClick += Control_PlayClick;
+                control.OrderingClick += Control_OrderingClick;
                 questionListStackPanel.Children.Add(control); // add control to StackPanel
             }
+            */
+        }
+
+        private void Control_OrderingClick(object sender, string direction)
+        {
+            var button = (QuestionControl)sender;
+            QuestionControl tbreplacedButton;
+            var quest = button.Question;
+
+            int ID = questionListStackPanel.Children.IndexOf(button);
+            int newID = questionListStackPanel.Children.IndexOf(button);
+
+            if (ID == 0 & direction == "Up")
+            {
+                contentDialogHost.TextContentDialog("Can't move this question up", "It is already at the top!", true);
+                return;
+            }
+            if (ID == questionListStackPanel.Children.Count - 1 & direction == "Down")
+            {
+                contentDialogHost.TextContentDialog("Can't move this question down", "It is already at the bottom!", true);
+                return;
+            }
+
+            if (direction == "Up")
+                newID--;
+            else
+                newID++;
+
+            tbreplacedButton = (QuestionControl)questionListStackPanel.Children[newID];
+            questionListStackPanel.Children.RemoveAt(ID);
+
+            // move button
+            questionListStackPanel.Children.Insert(newID, button);
+            // change Question ID
+            QuestionManager.OrderQuestion(ID, newID);
+            // update button ID
+            button.ID = newID;
+            tbreplacedButton.ID = ID;
         }
 
         async Task CallQuestionEditDialog(bool create, Question question, Dialogs.QuestionEditDialogContent comingfromPrev = null)
