@@ -26,6 +26,8 @@ namespace EscapeRoom
         {
             InitializeComponent();
 
+            Application.Current.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+
             // hide UI elements by default
             shiftdeletewarningTextBlock.Visibility = Visibility.Hidden;
 
@@ -40,6 +42,10 @@ namespace EscapeRoom
 
             // Init QuestionHandler
             QuestionManager = new QuestionManager();
+        private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            contentDialogHost.TextContentDialog("An error has occured!", e.Exception.Message, true, "Continue anyway");
+            e.Handled = true;
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
