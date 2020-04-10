@@ -222,28 +222,44 @@ namespace EscapeRoom
 
         }
 
-        private void Window_PreviewKeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        private async void Window_PreviewKeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (Keyboard.IsKeyDown(Key.LeftCtrl))
             {
-                if (e.Key == System.Windows.Input.Key.Q)
+                if (e.Key == Key.Q)
                 {
                     ThemeManager.Config_SetTheme(ThemeManager.Theme.Light);
                     ThemeManager.Config_SetAccent(ThemeManager.Accent.Blue);
                 }
-                if (e.Key == System.Windows.Input.Key.E)
+                if (e.Key == Key.E)
                 {
                     ThemeManager.Config_SetTheme(ThemeManager.Theme.Dark);
                     ThemeManager.Config_SetAccent(ThemeManager.Accent.Pink);
                 }
+
+                // new question
+                if (e.Key == Key.N & !DebugFeatures)
+                    newButton_Click(null, null);
+
                 // Debug shortcuts
                 if (!DebugFeatures)
                     return;
+
+                if (e.Key == Key.V)
+                    debug_ClearJSON_Click(null, null);
+                if (e.Key == Key.B)
+                    debug_ReadQuestsJSONFile_Click(null, null);
+                if (e.Key == Key.N & Keyboard.IsKeyDown(Key.LeftAlt))
+                    await CallQuestionEditDialog(true, new Question());
+                else if (e.Key == Key.N)
+                    QuestionManager.AddQuestion(new Question());
                 if (e.Key == Key.M)
                     QuestionManager.RemoveLastQuestion();
+                if (e.Key == Key.L)
+                    LoadQuestions();
             }
 
-            if (Keyboard.IsKeyUp(Key.LeftShift))
+            if (e.Key == Key.LeftShift)
             {
                 newButton.Icon = "\ue109"[0].ToString();
                 newButton.Text = "Új kérdés";
@@ -257,7 +273,7 @@ namespace EscapeRoom
             if (contentDialogHost.Visibility == Visibility.Visible)
                 return;
 
-            if (Keyboard.IsKeyDown(Key.LeftShift))
+            if (e.Key == Key.LeftShift)
             {
                 newButton.Icon = "\ue8c8"[0].ToString();
                 newButton.Text = "Utolsó duplikálása";
