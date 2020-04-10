@@ -42,7 +42,7 @@ namespace EscapeRoom.QuestionHandling
             if (!Question.QuestID.HasValue) // if there's no quest ID, assign +1 based on list
             {
                 int itemCount = list.Count;
-                Question.QuestID = itemCount++;
+                Question.QuestID = itemCount;
             }
 
             list.Add(Question);
