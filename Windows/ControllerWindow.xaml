@@ -118,7 +118,11 @@
                 <TextBlock FontSize="32" FontFamily="/Fonts/#Segoe MDL2 Assets" Text="&#xe74c;" VerticalAlignment="Center" />
                 <TextBlock FontSize="32" Margin="15,0,0,0">Powered by Xesign Game Engine</TextBlock>
             </StackPanel>
-            
+
+            <TextBlock x:Name="splash_errorTextBlock" Foreground="#f44336" Text="Error: %s" Visibility="Visible"
+                       FontSize="25" TextWrapping="Wrap"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" Margin="100,360,100,0"/>
+
         </Grid>
 
         <popups:ContentDialogHost x:Name="contentDialogHost" />

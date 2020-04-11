@@ -1,4 +1,3 @@
-﻿using EscapeRoom.QuestionHandling;
 ﻿using EscapeRoom.Configuration;
 using EscapeRoom.QuestionHandling;
 using EscapeRoom.Windows;
@@ -24,7 +23,6 @@ namespace EscapeRoom
     {
         public Animation Animation = new Animation();
         public ThemeManager ThemeManager;
-        public QuestionManager QuestionManager;
         public QuestionManager QuestionManager = new QuestionManager();
         public ConfigurationManager ConfigurationManager = new ConfigurationManager();
 
@@ -39,6 +37,7 @@ namespace EscapeRoom
 
             // hide UI elements by default
             shiftdeletewarningTextBlock.Visibility = Visibility.Hidden;
+            splash_errorTextBlock.Text = "";
 
             splashGrid.Visibility = Visibility.Visible;
 
@@ -66,10 +65,12 @@ namespace EscapeRoom
             LoadQuestions();
         }
 
-        private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private async void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            contentDialogHost.TextContentDialog("An error has occured!", e.Exception.Message, true, "Continue anyway");
             e.Handled = true;
+
+            await contentDialogHost.TextContentDialogAsync("An error has occured!", e.Exception.Message, true, "Continue anyway");
+            splash_errorTextBlock.Text = string.Format("Error: {0}", e.Exception.Message);
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
