@@ -1,4 +1,5 @@
 ﻿using EscapeRoom.Configuration;
+using EscapeRoom.Dialogs;
 using EscapeRoom.QuestionHandling;
 using EscapeRoom.Windows;
 using System;
@@ -466,6 +467,13 @@ namespace EscapeRoom
                 "This should automatically go through all questions in order, by ID.");
         }
 
+        private async void settingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            ContentDialog dialog = new ContentDialog() { Title = "Settings", PrimaryButtonText = "Accept" };
+            dialog.Content = new SettingsDialogContent();
+
+            await contentDialogHost.ShowDialogAsync(dialog);
+            LoadConfiguration();
         }
     }
 }

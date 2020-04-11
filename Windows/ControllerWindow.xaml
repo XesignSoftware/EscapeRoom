@@ -7,7 +7,7 @@
         xmlns:xezui_buttons="clr-namespace:XeZrunner.UI.Controls.Buttons;assembly=XeZrunner.UI"
         xmlns:xezui_fx="clr-namespace:XeZrunner.UI.ControlEffects;assembly=XeZrunner.UI"
         xmlns:local="clr-namespace:EscapeRoom"
-        xmlns:popups="clr-namespace:XeZrunner.UI.Popups;assembly=XeZrunner.UI"
+        xmlns:popups="clr-namespace:XeZrunner.UI.Popups;assembly=XeZrunner.UI" xmlns:dialogs="clr-namespace:EscapeRoom.Dialogs"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
         Title="EscapeRoom" Height="800" Width="1200" MinHeight="500" MinWidth="800" Background="{DynamicResource Background}" Foreground="{DynamicResource Foreground}"
         Loaded="Window_Loaded" xezui_fx:PointerTracker.Enabled="True" PreviewKeyUp="Window_PreviewKeyUp" PreviewKeyDown="Window_PreviewKeyDown" Closing="Window_Closing">
@@ -92,6 +92,8 @@
                     </TextBlock>
                 </ScrollViewer>
             </Grid>
+
+            <xezui_buttons:AppBarButton x:Name="settingsButton" Foreground="{DynamicResource Foreground_Secondary}" Icon="&#xe713;" HorizontalAlignment="Right" VerticalAlignment="Top" Click="settingsButton_Click" />
 
             <TextBlock Foreground="{DynamicResource Foreground_Secondary}" Opacity="0.15" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                 <Run FontFamily="/Fonts/#Segoe MDL2 Assets" Text="&#xe7fc;" />

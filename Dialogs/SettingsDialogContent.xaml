@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="EscapeRoom.Dialogs.SettingsDialogContent"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xz_controls="clr-namespace:XeZrunner.UI.Controls;assembly=XeZrunner.UI"
+             xmlns:xz_buttons="clr-namespace:XeZrunner.UI.Controls.Buttons;assembly=XeZrunner.UI"
+             xmlns:local="clr-namespace:EscapeRoom.Dialogs"
+             mc:Ignorable="d" 
+             d:DesignWidth="500" Foreground="{DynamicResource Foreground}"
+             Loaded="UserControl_Loaded">
+
+    <Grid Margin="5">
+
+        <StackPanel>
+
+            <TextBlock>
+                    <Run Foreground="{DynamicResource Accent}" FontWeight="Medium" Text="Theme" />
+                    <LineBreak />
+                    Choose between a lighter or darker shade of background.
+            </TextBlock>
+
+            <StackPanel x:Name="themeStackPanel" Orientation="Vertical" Margin="4,8,0,0">
+                <xz_buttons:ToggleSwitchButton x:Name="themeToggleButton" Icon="" Margin="-12,0" Title="Dark mode" Description="Use darker background colors for dark work environments" IsActiveChanged="ThemeToggleButton_IsActiveChanged" />
+            </StackPanel>
+
+            <TextBlock Margin="0,10,0,0">
+                    <Run Foreground="{DynamicResource Accent}" FontWeight="Medium" Text="Accent color" />
+                    <LineBreak />
+                    The colorful elements of the application will follow this choice.
+            </TextBlock>
+
+            <StackPanel x:Name="accentStackPanel" Orientation="Horizontal" Margin="4,8,0,0">
+                <xz_controls:RadioButton Text="Default" IsActiveChanged="accent_Click" />
+                <xz_controls:RadioButton Text="Teal" IsActiveChanged="accent_Click" />
+                <xz_controls:RadioButton Text="Blue" IsActiveChanged="accent_Click" />
+                <xz_controls:RadioButton Text="Green" IsActiveChanged="accent_Click" />
+                <xz_controls:RadioButton Text="Orange" IsActiveChanged="accent_Click" />
+                <xz_controls:RadioButton Text="Pink" IsActiveChanged="accent_Click" />
+                <xz_controls:RadioButton Text="Purple" IsActiveChanged="accent_Click" />
+            </StackPanel>
+
+            <TextBlock Margin="0,10,0,0">
+                    <Run Foreground="{DynamicResource Accent}" FontWeight="Medium" Text="Debug options" />
+            </TextBlock>
+
+            <StackPanel x:Name="debugStackPanel">
+
+                <xz_buttons:CheckBoxButton x:Name="debugFeaturesCheckbox" Icon="" Description="" Title="Enable debug features" Margin="0,10,0,0" IsActiveChanged="debugFeaturesCheckbox_IsActiveChanged"
+                                       Alignment="Right" />
+
+                <StackPanel Margin="0,0">
+                    <xz_buttons:ActionButton x:Name="ResetConfig_Button" Icon="" Text="RESET CONFIGURATION" Click="ResetConfig_Button_Click" />
+                </StackPanel>
+
+            </StackPanel>
+
+        </StackPanel>
+
+    </Grid>
+</UserControl>

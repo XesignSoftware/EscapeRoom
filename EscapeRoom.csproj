@@ -61,6 +61,9 @@
     <Compile Include="Animation.cs" />
     <Compile Include="Configuration\EscapeRoomConfig.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
+    <Compile Include="Dialogs\SettingsDialogContent.xaml.cs">
+      <DependentUpon>SettingsDialogContent.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Version.cs" />
     <Compile Include="Windows\GameWindow.xaml.cs">
       <DependentUpon>GameWindow.xaml</DependentUpon>
@@ -70,6 +73,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\QuestionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SettingsDialogContent.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
