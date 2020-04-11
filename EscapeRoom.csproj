@@ -59,6 +59,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Animation.cs" />
+    <Compile Include="Configuration\EscapeRoomConfig.cs" />
+    <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Version.cs" />
     <Compile Include="Windows\GameWindow.xaml.cs">
       <DependentUpon>GameWindow.xaml</DependentUpon>

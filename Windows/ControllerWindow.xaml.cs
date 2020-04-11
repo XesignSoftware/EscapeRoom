@@ -1,4 +1,6 @@
 ﻿using EscapeRoom.QuestionHandling;
+﻿using EscapeRoom.Configuration;
+using EscapeRoom.QuestionHandling;
 using EscapeRoom.Windows;
 using System;
 using System.Collections.Generic;
@@ -23,7 +25,11 @@ namespace EscapeRoom
         public Animation Animation = new Animation();
         public ThemeManager ThemeManager;
         public QuestionManager QuestionManager;
+        public QuestionManager QuestionManager = new QuestionManager();
+        public ConfigurationManager ConfigurationManager = new ConfigurationManager();
+
         Version Version = new Version();
+        public EscapeRoomConfig Config = new EscapeRoomConfig();
 
         public ControllerWindow()
         {
@@ -38,12 +44,20 @@ namespace EscapeRoom
 
             ThemeManager = new ThemeManager(Application.Current.Resources);
 
-            // Set dark theme
-            ThemeManager.Config_SetTheme(ThemeManager.Theme.Dark);
-            ThemeManager.Config_SetAccent(ThemeManager.Accent.Pink);
+            Config = ConfigurationManager.ReadConfigFromJSON();
+
+            // Set theme
+            if (!Config.Theme.HasValue)
+                ThemeManager.Config_SetTheme(Config.Theme_Default);
+            if (!Config.Accent.HasValue)
+            {
+                if (Config.Theme == ThemeManager.Theme.Dark)
+                    ThemeManager.Config_SetAccent(Config.Accent_Dark);
+                else
+                    ThemeManager.Config_SetAccent(Config.Accent_Light);
+            }
 
             // Init QuestionHandler
-            QuestionManager = new QuestionManager();
             QuestionManager.QuestionsChanged += QuestionManager_QuestionsChanged;
         }
 
@@ -60,20 +74,13 @@ namespace EscapeRoom
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-#if DEBUG
-            DebugFeatures = true;
-            debugRow.Height = new GridLength(1, GridUnitType.Auto);
-            this.Title += string.Format(" ({0}) [development]", Version.VersionNumber);
-#else
-            DisableDebugFeatures();
-#endif
-
-            if (Keyboard.IsKeyDown(Key.LeftShift) & Keyboard.IsKeyDown(Key.F12))
-                DisableDebugFeatures();
             ThemeManager.ConfigChanged += ThemeManager_ConfigChanged;
 
             // Load version info
             LoadVersionInfo();
+
+            // Load Configuration
+            LoadConfiguration();
 
             // Load Question list
             LoadQuestions();
@@ -82,12 +89,37 @@ namespace EscapeRoom
             await Animation.FadeOutAsync(splashGrid);
         }
 
-        public bool DebugFeatures = false;
-
-        void DisableDebugFeatures()
+        public void LoadConfiguration()
         {
-            DebugFeatures = false;
-            debugRow.Height = new GridLength(0, GridUnitType.Pixel);
+            Config = ConfigurationManager.ReadConfigFromJSON();
+            DebugFeatures = Config.DebugFeatures;
+            CheckThemeChanges();
+        }
+
+        public bool DebugFeatures
+        {
+            get { return Config.DebugFeatures; }
+            set
+            {
+                if (value)
+                {
+                    Config.DebugFeatures = true;
+                    debugRow.Height = new GridLength(1, GridUnitType.Auto);
+                    debugOverlayButton.Visibility = Visibility.Visible;
+
+                    this.Title = string.Format("EscapeRoom ({0}) [development]", Version.VersionNumber);
+                }
+                else
+                {
+                    Config.DebugFeatures = false;
+                    debugRow.Height = new GridLength(0, GridUnitType.Pixel);
+                    debugOverlayButton.Visibility = Visibility.Collapsed;
+
+                    this.Title = "EscapeRoom";
+                }
+
+                ConfigurationManager.SerializeConfigJSON(Config);
+            }
         }
 
         void LoadVersionInfo()
@@ -174,7 +206,8 @@ namespace EscapeRoom
             {
                 Title = create ? "Új kérdés létrehozása" : "Kérdés módosítása",
                 PrimaryButtonText = create ? "Létrehozás" : "Mentés",
-                SecondaryButtonText = "Mégse"
+                SecondaryButtonText = "Mégse",
+                IsDismissableByTouchBlocker = false
             };
 
             Dialogs.QuestionEditDialogContent dialogContent;
@@ -271,7 +304,36 @@ namespace EscapeRoom
             }
         }
 
-        private void ThemeManager_ConfigChanged(object sender, EventArgs e)
+        public void CheckThemeChanges()
+        {
+            ThemeManager_ConfigChanged(null, null);
+        }
+
+        bool Theming_Handled = true;
+        private async void ThemeManager_ConfigChanged(object sender, EventArgs e)
+        {
+            if (!Theming_Handled)
+                return;
+
+            Theming_Handled = false;
+
+            if (Config.Theme == null)
+                ThemeManager.Config_SetTheme(Config.Theme_Default);
+            else if (Config.Theme != ThemeManager.GetThemeFromString(ThemeManager.Config.theme))
+                ThemeManager.Config_SetTheme(Config.Theme.Value);
+
+            if (Config.Accent == null)
+            {
+                if (Config.Theme == ThemeManager.Theme.Dark || Config.Theme == null)
+                    ThemeManager.Config_SetAccent(Config.Accent_Dark);
+                else
+                    ThemeManager.Config_SetAccent(Config.Accent_Light);
+            }
+            else if (Config.Accent != ThemeManager.GetAccentFromString(ThemeManager.Config.accent))
+                ThemeManager.Config_SetAccent(Config.Accent.Value);
+
+            ConfigurationManager.SerializeConfigJSON(Config);
+
             // Screenshot!
             themechangeImage.Source = Screenshot(this);
 
@@ -282,6 +344,8 @@ namespace EscapeRoom
 
             await Task.Delay(TimeSpan.FromSeconds(.3));
             themechangeImage.Visibility = Visibility.Hidden;
+
+            Theming_Handled = true;
         }
 
         RenderTargetBitmap Screenshot(FrameworkElement element)
@@ -297,21 +361,19 @@ namespace EscapeRoom
         private async void Window_PreviewKeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (Keyboard.IsKeyDown(Key.LeftCtrl))
-            {
-                if (e.Key == Key.Q)
-                {
-                    ThemeManager.Config_SetTheme(ThemeManager.Theme.Light);
-                    ThemeManager.Config_SetAccent(ThemeManager.Accent.Blue);
-                }
-                if (e.Key == Key.E)
-                {
-                    ThemeManager.Config_SetTheme(ThemeManager.Theme.Dark);
-                    ThemeManager.Config_SetAccent(ThemeManager.Accent.Pink);
-                }
-
-                // new question
+            {// new question
                 if (e.Key == Key.N & !DebugFeatures)
                     newButton_Click(null, null);
+
+#if DEBUG
+                if (e.Key == Key.F12)
+                {
+                    DebugFeatures = !DebugFeatures;
+
+                    if (DebugFeatures)
+                        contentDialogHost.TextContentDialog("Debug features re-enabled!", "", true);
+                }
+#endif
 
                 // Debug shortcuts
                 if (!DebugFeatures)
@@ -329,9 +391,17 @@ namespace EscapeRoom
                     QuestionManager.RemoveLastQuestion();
                 if (e.Key == Key.L)
                     LoadQuestions();
+
+                if (e.Key == Key.Q & Keyboard.IsKeyDown(Key.LeftShift))
+                {
+                    ConfigurationManager.ResetConfiguration();
+                    contentDialogHost.TextContentDialog("Configuration reset", "", true);
+
+                    CheckThemeChanges();
+                }
             }
 
-            if (e.Key == Key.LeftShift)
+            if (Keyboard.IsKeyUp(Key.LeftShift))
             {
                 newButton.Icon = "\ue109"[0].ToString();
                 newButton.Text = "Új kérdés";
@@ -345,7 +415,7 @@ namespace EscapeRoom
             if (contentDialogHost.Visibility == Visibility.Visible)
                 return;
 
-            if (e.Key == Key.LeftShift)
+            if (Keyboard.IsKeyDown(Key.LeftShift))
             {
                 newButton.Icon = "\ue8c8"[0].ToString();
                 newButton.Text = "Utolsó duplikálása";
