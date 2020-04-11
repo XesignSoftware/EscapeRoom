@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 using XeZrunner.UI.Controls;
 using XeZrunner.UI.Popups;
 using XeZrunner.UI.Theming;
@@ -34,7 +37,6 @@ namespace EscapeRoom
             splashGrid.Visibility = Visibility.Visible;
 
             ThemeManager = new ThemeManager(Application.Current.Resources);
-            ThemeManager.ConfigChanged += ThemeManager_ConfigChanged;
 
             // Set dark theme
             ThemeManager.Config_SetTheme(ThemeManager.Theme.Dark);
@@ -68,6 +70,7 @@ namespace EscapeRoom
 
             if (Keyboard.IsKeyDown(Key.LeftShift) & Keyboard.IsKeyDown(Key.F12))
                 DisableDebugFeatures();
+            ThemeManager.ConfigChanged += ThemeManager_ConfigChanged;
 
             // Load version info
             LoadVersionInfo();
@@ -270,8 +273,26 @@ namespace EscapeRoom
         }
 
         private void ThemeManager_ConfigChanged(object sender, EventArgs e)
-        {
+            // Screenshot!
+            themechangeImage.Source = Screenshot(this);
 
+            themechangeImage.Visibility = Visibility.Visible;
+
+            DoubleAnimation anim = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(.3));
+            themechangeImage.BeginAnimation(OpacityProperty, anim);
+
+            await Task.Delay(TimeSpan.FromSeconds(.3));
+            themechangeImage.Visibility = Visibility.Hidden;
+        }
+
+        RenderTargetBitmap Screenshot(FrameworkElement element)
+        {
+            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap((int)element.ActualWidth, (int)element.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+            renderTargetBitmap.Render(element);
+
+            //await Task.Delay(1);
+
+            return renderTargetBitmap;
         }
 
         private async void Window_PreviewKeyUp(object sender, System.Windows.Input.KeyEventArgs e)

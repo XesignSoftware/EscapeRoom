@@ -123,5 +123,8 @@
 
         <popups:ContentDialogHost x:Name="contentDialogHost" />
 
+        <!-- theme changing image -11 -->
+        <Image x:Name="themechangeImage" Margin="0" Stretch="None" Visibility="Hidden" />
+
     </Grid>
 </Window>
