@@ -117,8 +117,10 @@ namespace EscapeRoom.QuestionHandling
             var quest = list[oldID];
             var tbreplacedQuest = list[newID];
 
-            if (newID == 0 || newID < oldID)
+            if (newID == 0)
                 list.Insert(newID, quest);
+            else if (newID < oldID)
+                list.Insert(newID - 1, quest);
             else if (newID > oldID)
                 list.Insert(newID + 1, quest);
 
@@ -127,8 +129,8 @@ namespace EscapeRoom.QuestionHandling
             else
                 list.RemoveAt(oldID);
 
-            quest.QuestID = list.IndexOf(quest);
-            tbreplacedQuest.QuestID = list.IndexOf(tbreplacedQuest);
+            quest.QuestID = newID;
+            tbreplacedQuest.QuestID = oldID;
 
             SerializeQuestsJSON(list);
 
