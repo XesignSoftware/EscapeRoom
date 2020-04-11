@@ -43,15 +43,6 @@ namespace EscapeRoom.Dialogs
 
             switch (Config.Theme)
             {
-                case null:
-                    {
-                        if (Config.Theme_Default == XeZrunner.UI.Theming.ThemeManager.Theme.Dark)
-                            themeToggleButton.IsActive = true;
-                        else
-                            themeToggleButton.IsActive = false;
-
-                        break;
-                    }
                 case XeZrunner.UI.Theming.ThemeManager.Theme.Light:
                     themeToggleButton.IsActive = false; break;
                 case XeZrunner.UI.Theming.ThemeManager.Theme.Dark:
@@ -60,8 +51,8 @@ namespace EscapeRoom.Dialogs
 
             foreach (XeZrunner.UI.Controls.RadioButton button in accentStackPanel.Children)
             {
-                if (!Config.Accent.HasValue & button.Text == "Default")
-                    button.IsActive = true;
+                if (Config._UserAccent == null & button.Text == "Default")
+                { button.IsActive = true; break; }
                 else if (button.Text == Config.Accent.ToString())
                     button.IsActive = true;
             }
@@ -95,9 +86,9 @@ namespace EscapeRoom.Dialogs
             foreach (XeZrunner.UI.Controls.RadioButton button in accentStackPanel.Children)
             {
                 if (button.Text == "Default" & button.IsActive)
-                    Config.Accent = null;
+                    Config._UserAccent = null;
                 else if (button.IsActive)
-                    Config.Accent = ThemeManager.GetAccentFromString(button.Text);
+                    Config._UserAccent = ThemeManager.GetAccentFromString(button.Text);
             }
 
             ConfigurationManager.SerializeConfigJSON(Config);

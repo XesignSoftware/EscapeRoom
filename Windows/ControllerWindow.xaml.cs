@@ -46,17 +46,6 @@ namespace EscapeRoom
 
             Config = ConfigurationManager.ReadConfigFromJSON();
 
-            // Set theme
-            if (!Config.Theme.HasValue)
-                ThemeManager.Config_SetTheme(Config.Theme_Default);
-            if (!Config.Accent.HasValue)
-            {
-                if (Config.Theme == ThemeManager.Theme.Dark)
-                    ThemeManager.Config_SetAccent(Config.Accent_Dark);
-                else
-                    ThemeManager.Config_SetAccent(Config.Accent_Light);
-            }
-
             // Init QuestionHandler
             QuestionManager.QuestionsChanged += QuestionManager_QuestionsChanged;
         }
@@ -318,34 +307,34 @@ namespace EscapeRoom
                 return;
 
             Theming_Handled = false;
+            bool theme_unchanged = false;
+            bool accent_unchanged = false;
 
-            if (Config.Theme == null)
-                ThemeManager.Config_SetTheme(Config.Theme_Default);
-            else if (Config.Theme != ThemeManager.GetThemeFromString(ThemeManager.Config.theme))
+            if (Config.Theme != ThemeManager.GetThemeFromString(ThemeManager.Config.theme))
                 ThemeManager.Config_SetTheme(Config.Theme.Value);
+            else
+                theme_unchanged = true;
 
-            if (Config.Accent == null)
-            {
-                if (Config.Theme == ThemeManager.Theme.Dark || Config.Theme == null)
-                    ThemeManager.Config_SetAccent(Config.Accent_Dark);
-                else
-                    ThemeManager.Config_SetAccent(Config.Accent_Light);
-            }
-            else if (Config.Accent != ThemeManager.GetAccentFromString(ThemeManager.Config.accent))
+            if (Config.Accent != ThemeManager.GetAccentFromString(ThemeManager.Config.accent))
                 ThemeManager.Config_SetAccent(Config.Accent.Value);
+            else
+                accent_unchanged = true;
 
-            ConfigurationManager.SerializeConfigJSON(Config);
+            if (!theme_unchanged || !accent_unchanged)
+            {
+                //ConfigurationManager.SerializeConfigJSON(Config);
 
-            // Screenshot!
-            themechangeImage.Source = Screenshot(this);
+                // Screenshot!
+                themechangeImage.Source = Screenshot(this);
 
-            themechangeImage.Visibility = Visibility.Visible;
+                themechangeImage.Visibility = Visibility.Visible;
 
-            DoubleAnimation anim = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(.3));
-            themechangeImage.BeginAnimation(OpacityProperty, anim);
+                DoubleAnimation anim = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(.3));
+                themechangeImage.BeginAnimation(OpacityProperty, anim);
 
-            await Task.Delay(TimeSpan.FromSeconds(.3));
-            themechangeImage.Visibility = Visibility.Hidden;
+                await Task.Delay(TimeSpan.FromSeconds(.3));
+                themechangeImage.Visibility = Visibility.Hidden;
+            }
 
             Theming_Handled = true;
         }
