@@ -8,7 +8,7 @@ namespace EscapeRoom
 {
     public class Version
     {
-        public string VersionNumber = "20200403-01";
+        public string VersionNumber = "20200411-02";
         public string BuildType
         {
             get
