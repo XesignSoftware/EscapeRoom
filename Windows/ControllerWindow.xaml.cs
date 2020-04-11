@@ -88,7 +88,6 @@ namespace EscapeRoom
         {
             DebugFeatures = false;
             debugRow.Height = new GridLength(0, GridUnitType.Pixel);
-            debugButton.Visibility = Visibility.Collapsed;
         }
 
         void LoadVersionInfo()
@@ -355,15 +354,6 @@ namespace EscapeRoom
             }
         }
 
-        private async void debugButton_Click(object sender, RoutedEventArgs e)
-        {
-            ContentDialog dialog = new ContentDialog() { Title = "", Content = "" };
-            if (await contentDialogHost.ShowDialogAsync(dialog) == ContentDialogHost.ContentDialogResult.Primary)
-            {
-
-            }
-        }
-
         private async void debugOverlayButton_Click(object sender, RoutedEventArgs e)
         {
             ContentDialog dialog = new ContentDialog()
@@ -385,6 +375,7 @@ namespace EscapeRoom
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            // Close the game window(s) we create.
             Application.Current.Shutdown();
         }
 
@@ -396,6 +387,13 @@ namespace EscapeRoom
         private void debug_ClearJSON_Click(object sender, RoutedEventArgs e)
         {
             QuestionManager.ClearQuestionList();
+        }
+
+        private void automaticButton_Click(object sender, RoutedEventArgs e)
+        {
+            contentDialogHost.TextContentDialog("Todo",
+                "This should automatically go through all questions in order, by ID.");
+        }
 
         }
     }

@@ -48,11 +48,11 @@
 
                     <StackPanel Orientation="Horizontal" Grid.Row="1">
                         <xezui_buttons:CircularActionButton x:Name="newButton" Icon="&#xe109;" Text="Új kérdés" Click="newButton_Click" />
-                        <xezui_buttons:CircularActionButton x:Name="debugButton" Icon="&#xe9d9;" Text="Debug" Click="debugButton_Click" Margin="4,0,0,0" />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
                         <xezui_buttons:CircularActionButton x:Name="debugOverlayButton" Icon="&#xe74c;" Text="Kérdés tesztelése" Click="debugOverlayButton_Click" />
+                        <xezui_buttons:CircularActionButton x:Name="automaticButton" Icon="&#xe768;" Text="Játék indítása" Click="automaticButton_Click" />
                     </StackPanel>
 
                     <TextBlock x:Name="shiftdeletewarningTextBlock" Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Margin="0,4,0,8">
