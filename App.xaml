@@ -9,10 +9,6 @@
                 <ResourceDictionary Source="pack://application:,,,/XeZrunner.UI;component/Theming/Themes.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/XeZrunner.UI;component/Theming/Accents.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <Style TargetType="TextBlock">
-                <Setter Property="FontFamily" Value="/Fonts/#Google Sans" />
-                <Setter Property="FontSize" Value="14" />
-            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

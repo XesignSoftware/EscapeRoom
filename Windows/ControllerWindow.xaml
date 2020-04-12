@@ -11,8 +11,17 @@
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
         Title="EscapeRoom" Height="800" Width="1200" MinHeight="500" MinWidth="800" Background="{DynamicResource Background}" Foreground="{DynamicResource Foreground}"
         Loaded="Window_Loaded" xezui_fx:PointerTracker.Enabled="True" PreviewKeyUp="Window_PreviewKeyUp" PreviewKeyDown="Window_PreviewKeyDown" Closing="Window_Closing">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="/Fonts/#Google Sans" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+    </Window.Resources>
+    
+    <!-- Main content -->
     <Grid>
 
+        <!-- Content -->
         <Grid>
 
             <Grid Margin="160,30" VerticalAlignment="Center">
@@ -109,6 +118,7 @@
 
         </Grid>
 
+        <!-- Splash -->
         <Grid x:Name="splashGrid" Background="{DynamicResource Background}" Visibility="Hidden">
 
             <TextBlock FontSize="68" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -127,6 +137,7 @@
 
         </Grid>
 
+        <!-- ContentDialog host-->
         <popups:ContentDialogHost x:Name="contentDialogHost" />
 
         <!-- theme changing image -11 -->
