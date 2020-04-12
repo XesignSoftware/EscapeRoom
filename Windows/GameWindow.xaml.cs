@@ -19,7 +19,7 @@ using XeZrunner.UI.Theming;
 namespace EscapeRoom.Windows
 {
     public partial class GameWindow : Window
-    { 
+    {
         public Animation Animation = new Animation();
         ControllerWindow ControllerWindow = (ControllerWindow)Application.Current.MainWindow;
         ThemeManager ThemeManager;
@@ -76,10 +76,20 @@ namespace EscapeRoom.Windows
             {
                 _debugFeatures = value;
 
-                if (!value)
-                    titleBar.Visibility = Visibility.Collapsed;
-                else
+                if (value)
+                {
                     titleBar.Visibility = Visibility.Visible;
+                    if (Question == null)
+                        titleBar.AppTitle = "EscapeRoom: [null or invalid question]";
+                    else
+                        titleBar.AppTitle = string.Format("EscapeRoom: " + // debug titlebar info
+                            "[QuestID: {0} | QuestionType: {1} | QuestionInputType: {2} | QuestionSolution: \"{3}\"]"
+                            , Question.QuestID, Question.QuestionType, Question.QuestionInputType, QuestionInputSolution);
+                }
+                else
+                {
+                    titleBar.Visibility = Visibility.Collapsed;
+                }
             }
         }
 
@@ -218,6 +228,9 @@ namespace EscapeRoom.Windows
                             {
                                 string finalChoice = choice.Substring(1);
                                 input_choicesStackPanel.Children.Add(CreateChoiceButton(finalChoice, true));
+
+                                // set global solution string
+                                QuestionInputSolution = finalChoice;
                             }
                             else
                                 input_choicesStackPanel.Children.Add(CreateChoiceButton(choice));
