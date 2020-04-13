@@ -1,0 +1,34 @@
+﻿<UserControl x:Name="main" x:Class="EscapeRoom.Dialogs.MetaEditDialogContent"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			 xmlns:xezui_controls="clr-namespace:XeZrunner.UI.Controls;assembly=XeZrunner.UI" xmlns:buttons="clr-namespace:XeZrunner.UI.Controls.Buttons;assembly=XeZrunner.UI" xmlns:popups="clr-namespace:XeZrunner.UI.Popups;assembly=XeZrunner.UI"
+			 xmlns:local="clr-namespace:EscapeRoom.Dialogs"
+			 mc:Ignorable="d" 
+			 d:DesignWidth="800" Foreground="{DynamicResource Foreground}"
+			 Loaded="main_Loaded">
+	<Grid Margin="5">
+
+        <StackPanel>
+
+            <StackPanel x:Name="modify_mediaStackPanel">
+                <TextBlock Text="Game ending" />
+                <Grid x:Name="mediaContainer" Margin="0" MaxWidth="250" />
+
+                <Grid Margin="0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <xezui_controls:TextField x:Name="media_pathTextField" Title="Media path:" TextChanged="media_pathTextField_TextChanged" />
+                    <buttons:ActionButton x:Name="media_browseButton" Grid.Column="1" Icon="&#xe838;" Text="BROWSE..." VerticalAlignment="Bottom" Margin="5,0,0,0" Height="34" Click="media_browseButton_Click" />
+                </Grid>
+
+                <xezui_controls:TextField x:Name="modify_endtextTextField" Title="Ending text:" Margin="0,8"/>
+            </StackPanel>
+
+        </StackPanel>
+		
+	</Grid>
+</UserControl>

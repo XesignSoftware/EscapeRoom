@@ -5,24 +5,19 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace EscapeRoom.Configuration
 {
     public class ConfigurationManager
     {
-        public EscapeRoomConfig ReadConfigFromJSON()
-        {
-            string file = File.ReadAllText(GetPathForJSON(ConfigJSON));
-            return JsonConvert.DeserializeObject<EscapeRoomConfig>(file);
-        }
-
-        public string ReadConfigFromJSON_Literal()
-        {
-            return File.ReadAllText(GetPathForJSON(ConfigJSON));
-        }
-
         public string ConfigJSON = "EscapeRoom_Configuration.json";
+        public ConfigurationManager()
+        {
 
+        }
+
+        #region JSON Read & get
         public string GetPathForJSON(string file)
         {
             string configDir = AppDomain.CurrentDomain.BaseDirectory + @"Configuration\";
@@ -37,11 +32,11 @@ namespace EscapeRoom.Configuration
 
             return configDir + file;
         }
-
-        public void ResetConfiguration()
+        public string ReadConfigFromJSON_Literal()
         {
-            SerializeConfigJSON(new EscapeRoomConfig());
+            return File.ReadAllText(GetPathForJSON(ConfigJSON));
         }
+        #endregion
 
         void CreateConfigFile(string path, EscapeRoomConfig config)
         {
@@ -51,7 +46,23 @@ namespace EscapeRoom.Configuration
                 ser.Serialize(file, config);
             }
         }
+        public EscapeRoomConfig ReadConfigFromJSON()
+        {
+            string file = File.ReadAllText(GetPathForJSON(ConfigJSON));
 
+            // if the config file is empty, create a new empty config file and return that
+            if (file == "" || file == "[]")
+            {
+                ResetConfiguration();
+                return ReadConfigFromJSON();
+            }
+
+            return JsonConvert.DeserializeObject<EscapeRoomConfig>(file);
+        }
+        public void ResetConfiguration()
+        {
+            SerializeConfigJSON(new EscapeRoomConfig());
+        }
         public void SerializeConfigJSON(EscapeRoomConfig config)
         {
             CreateConfigFile(GetPathForJSON(ConfigJSON), config);

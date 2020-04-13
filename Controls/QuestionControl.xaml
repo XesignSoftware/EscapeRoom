@@ -81,20 +81,20 @@
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition x:Name="rowdef_ID" />
-                        <RowDefinition x:Name="rowdef_Type" />
                         <RowDefinition x:Name="rowdef_Title" />
                         <RowDefinition x:Name="rowdef_Description" />
+                        <RowDefinition x:Name="rowdef_Type" />
                     </Grid.RowDefinitions>
 
                     <TextBlock Text="ID:" Grid.Row="0" Foreground="{DynamicResource Foreground_Secondary}" TextAlignment="Right"/>
-                    <TextBlock Text="Típus:" Grid.Row="1" Foreground="{DynamicResource Foreground_Secondary}" TextAlignment="Right"/>
-                    <TextBlock Text="Cím:" Grid.Row="2" Foreground="{DynamicResource Foreground_Secondary}" TextAlignment="Right"/>
-                    <TextBlock Text="Leírás:" Grid.Row="3" Foreground="{DynamicResource Foreground_Secondary}" TextAlignment="Right"/>
+                    <TextBlock Text="Cím:" Grid.Row="1" Foreground="{DynamicResource Foreground_Secondary}" TextAlignment="Right"/>
+                    <TextBlock Text="Leírás:" Grid.Row="2" Foreground="{DynamicResource Foreground_Secondary}" TextAlignment="Right"/>
+                    <TextBlock Text="Típus:" Grid.Row="3" Foreground="{DynamicResource Foreground_Secondary}" TextAlignment="Right"/>
 
-                    <TextBlock x:Name="ID_TextBlock" Text="%i" Grid.Column="1" Margin="10,0,0,0"/>
-                    <TextBlock x:Name="Type_TextBlock" Text="%s" Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" />
-                    <TextBlock x:Name="Title_TextBlock" Text="%s" Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" />
-                    <TextBlock x:Name="Desc_TextBlock" Text="%s" Grid.Row="3" Grid.Column="1" Margin="10,0,0,0" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="ID_TextBlock" Text="%i" Grid.Row="0" Grid.Column="1" Margin="10,0,0,0"/>
+                    <TextBlock x:Name="Title_TextBlock" Text="%s" Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" />
+                    <TextBlock x:Name="Desc_TextBlock" Text="%s" Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="Type_TextBlock" Text="%s" Grid.Row="3" Grid.Column="1" Margin="10,0,0,0" />
                 </Grid>
             </Grid>
 

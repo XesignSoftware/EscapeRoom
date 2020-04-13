@@ -21,7 +21,6 @@ namespace EscapeRoom
 
             await Task.Delay(TimeSpan.FromSeconds(seconds));
         }
-
         public async Task FadeOutAsync(UIElement element, double seconds = .3, Visibility handleVisiblity = Visibility.Collapsed)
         {
             DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(seconds));
@@ -33,13 +32,11 @@ namespace EscapeRoom
             if (handleVisiblity != Visibility.Visible)
                 element.Visibility = handleVisiblity;
         }
-
         public void FadeIn(UIElement element, double seconds = .3)
         {
             DoubleAnimation animation = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(seconds));
             element.BeginAnimation(UIElement.OpacityProperty, animation);
         }
-
         public void FadeOut(UIElement element, double seconds = .3)
         {
             DoubleAnimation animation = new DoubleAnimation(0, TimeSpan.FromSeconds(seconds));

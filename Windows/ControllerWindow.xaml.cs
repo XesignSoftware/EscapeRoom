@@ -22,47 +22,38 @@ namespace EscapeRoom
     /// </summary>
     public partial class ControllerWindow : Window
     {
-        public Animation Animation = new Animation();
         public ThemeManager ThemeManager;
+        Version Version = new Version();
+        public Animation Animation = new Animation();
+        public EscapeRoomConfig Config = new EscapeRoomConfig();
         public QuestionManager QuestionManager = new QuestionManager();
         public ConfigurationManager ConfigurationManager = new ConfigurationManager();
-
-        Version Version = new Version();
-        public EscapeRoomConfig Config = new EscapeRoomConfig();
 
         public ControllerWindow()
         {
             InitializeComponent();
 
             Application.Current.Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+            ThemeManager = new ThemeManager(Application.Current.Resources);
+
+            splashGrid.Visibility = Visibility.Visible;
+
+            if (Keyboard.IsKeyDown(Key.LeftShift) & Keyboard.IsKeyDown(Key.F11))
+            {
+                this.Focus();
+                ConfigurationManager.ResetConfiguration();
+                contentDialogHost.TextContentDialog("Configuration reset", string.Format("The configuration has been reset!\n\n{0}", ConfigurationManager.ReadConfigFromJSON_Literal()));
+            }
 
             // hide UI elements by default
             shiftdeletewarningTextBlock.Visibility = Visibility.Hidden;
             splash_errorTextBlock.Text = "";
-
-            splashGrid.Visibility = Visibility.Visible;
-
-            ThemeManager = new ThemeManager(Application.Current.Resources);
 
             Config = ConfigurationManager.ReadConfigFromJSON();
 
             // Init QuestionHandler
             QuestionManager.QuestionsChanged += QuestionManager_QuestionsChanged;
         }
-
-        private void QuestionManager_QuestionsChanged(object sender, EventArgs e)
-        {
-            LoadQuestions();
-        }
-
-        private async void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
-        {
-            e.Handled = true;
-
-            await contentDialogHost.TextContentDialogAsync("An error has occured!", e.Exception.Message, true, "Continue anyway");
-            splash_errorTextBlock.Text = string.Format("Error: {0}", e.Exception.Message);
-        }
-
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             ThemeManager.ConfigChanged += ThemeManager_ConfigChanged;
@@ -76,84 +67,198 @@ namespace EscapeRoom
             // Load Question list
             LoadQuestions();
 
-            await Task.Delay(TimeSpan.FromSeconds(.82));
+            await Task.Delay(TimeSpan.FromSeconds(.6));
             await Animation.FadeOutAsync(splashGrid);
         }
-
         public void LoadConfiguration()
         {
             Config = ConfigurationManager.ReadConfigFromJSON();
             DebugFeatures = Config.DebugFeatures;
             CheckThemeChanges();
         }
-
-        public bool DebugFeatures
-        {
-            get { return Config.DebugFeatures; }
-            set
-            {
-                if (value)
-                {
-                    Config.DebugFeatures = true;
-                    debugRow.Height = new GridLength(1, GridUnitType.Auto);
-                    debugOverlayButton.Visibility = Visibility.Visible;
-
-                    this.Title = string.Format("EscapeRoom ({0}) [development]", Version.VersionNumber);
-                }
-                else
-                {
-                    Config.DebugFeatures = false;
-                    debugRow.Height = new GridLength(0, GridUnitType.Pixel);
-                    debugOverlayButton.Visibility = Visibility.Collapsed;
-
-                    this.Title = "EscapeRoom";
-                }
-
-                ConfigurationManager.SerializeConfigJSON(Config);
-            }
-        }
-
         void LoadVersionInfo()
         {
-            versionString.Text = string.Format("{0} [{1}]", Version.VersionNumber, Version.BuildType);
+            debug_versionString.Text = string.Format("{0} [{1}]", Version.VersionNumber, Version.BuildType);
+            release_versionString.Text = string.Format("version: {0}", Version.VersionNumber);
         }
 
+        private async void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            e.Handled = true;
+
+            await contentDialogHost.TextContentDialogAsync("An error has occured!", e.Exception.Message, true, "Continue anyway");
+            splash_errorTextBlock.Text = string.Format("Error: {0}", e.Exception.Message);
+        }
+
+        #region Question engine
         public void LoadQuestions()
         {
-            List<Question> list = QuestionManager.ReadQuestsListFromJSON(); // get Question list
+            List<Question> list = QuestionManager.GetQuestsFromJSON(); // get Question list
             List<int> questIDList = new List<int>();
+            Question metaQuestion = null;
 
             foreach (Question quest in list)
-                questIDList.Add(quest.QuestID.Value);
+            {
+                if (quest.QuestID != null)
+                    questIDList.Add(quest.QuestID.Value);
+                else
+                {
+                    metaQuestion = quest;
+                }
+            }
+
+            list.Remove(metaQuestion);
 
             //questIDList.Sort();
 
-            // clear StackPanel
+            // clear containers
             questionListStackPanel.Children.Clear();
+            metaquestionGrid.Children.Clear();
 
             foreach (int questID in questIDList)
-            {
-                QuestionControl control = new QuestionControl(list[questID]); // create new Question control
-                control.Click += Control_Click;
-                control.DeleteClick += Control_DeleteClick;
-                control.PlayClick += Control_PlayClick;
+                questionListStackPanel.Children.Add(CreateQuestionControl(list[questID])); // add controls to StackPanel
+            if (metaQuestion != null)
+                metaquestionGrid.Children.Add(CreateQuestionControl(metaQuestion));
+        }
+        QuestionControl CreateQuestionControl(Question quest)
+        {
+            QuestionControl control = new QuestionControl(quest); // create new Question control
+            control.Click += Control_Click;
+            control.DeleteClick += Control_DeleteClick;
+            control.PlayClick += Control_PlayClick;
+            if (quest.QuestID != null)
                 control.OrderingClick += Control_OrderingClick;
-                questionListStackPanel.Children.Add(control); // add control to StackPanel
+
+            return control;
+        }
+        async Task CallQuestionEditDialog(bool create, Question question, UIElement comingfromPrev = null)
+        {
+            ContentDialog dialog = new ContentDialog()
+            {
+                Title = create ? "Új kérdés létrehozása" : "Kérdés módosítása",
+                PrimaryButtonText = create ? "Létrehozás" : "Mentés",
+                SecondaryButtonText = "Mégse",
+                IsDismissableByTouchBlocker = false
+            };
+
+#if DEBUG
+            dialog.IsDismissableByTouchBlocker = true;
+#endif
+
+            if (question.QuestionType == Question.QuestType.MetaQuestion)
+                dialog.Title = "Játékkonfiguráció módosítása";
+
+            UIElement dialogContent;
+
+            if (comingfromPrev != null)
+                dialogContent = comingfromPrev;
+            else
+            {
+                if (question.QuestionType != Question.QuestType.MetaQuestion)
+                    dialogContent = new Dialogs.QuestionEditDialogContent(question);
+                else
+                    dialogContent = new Dialogs.MetaEditDialogContent(question);
             }
 
-            /*
-            foreach (Question inc in list)
+            dialog.Content = dialogContent;
+
+            if (await contentDialogHost.ShowDialogAsync(dialog) == ContentDialogHost.ContentDialogResult.Primary)
             {
-                QuestionControl control = new QuestionControl(inc); // create new Question control
-                control.Click += Control_Click;
-                control.DeleteClick += Control_DeleteClick;
-                control.PlayClick += Control_PlayClick;
-                control.OrderingClick += Control_OrderingClick;
-                questionListStackPanel.Children.Add(control); // add control to StackPanel
+                Question newQuestion;
+
+                try
+                {
+                    if (question.QuestionType != Question.QuestType.MetaQuestion)
+                    {
+                        var dialogContentForEditBuild = (QuestionEditDialogContent)dialogContent;
+                        newQuestion = dialogContentForEditBuild.BuildQuestion();
+                    }
+                    else
+                    {
+                        var dialogContentForMetaBuild = (MetaEditDialogContent)dialogContent;
+                        newQuestion = dialogContentForMetaBuild.BuildQuestion();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await contentDialogHost.TextContentDialogAsync("Could not save question!", ex.Message, true);
+
+                    // There was an error.
+                    // Re-call the exact same dialog that the user just witnessed.
+
+                    // detach the previous dialog's content so we can re-use it
+                    dialog.Content = null;
+
+                    // re-call the dialog with the same Content
+                    await CallQuestionEditDialog(create, question, dialogContent);
+
+                    return;
+                }
+
+                if (create) // creating a new question
+                    QuestionManager.AddQuestion(newQuestion);
+                else // modifying an existing question
+                    QuestionManager.ModifyQuestion(newQuestion);
             }
-            */
         }
 
+        private void QuestionManager_QuestionsChanged(object sender, EventArgs e)
+        {
+            LoadQuestions();
+        }
+        #endregion
+
+        #region Question control click events
+        private async void newButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!Keyboard.IsKeyDown(Key.LeftShift))
+                await CallQuestionEditDialog(true, new Question());
+            else
+            {
+                if (QuestionManager.GetQuestionCount() == 0)
+                {
+                    contentDialogHost.TextContentDialog("Could not create question", "There isn't a question to duplicate.", true);
+                    return;
+                }
+                QuestionManager.DuplicateQuestion();
+
+            }
+        }
+        private async void Control_Click(object sender, EventArgs e)
+        {
+            Question question = (Question)sender;
+            await CallQuestionEditDialog(create: false, question);
+        }
+        private void Control_PlayClick(object sender, EventArgs e)
+        {
+            Question targetQuestion = (Question)sender;
+
+            GameWindow overlay = new GameWindow(targetQuestion);
+            overlay.Show(); overlay.Activate();
+        }
+        private async void Control_DeleteClick(object sender, EventArgs e)
+        {
+            Question targetQuestion = (Question)sender;
+
+            if (!Keyboard.IsKeyDown(Key.LeftShift))
+            {
+                ContentDialog dialog = new ContentDialog()
+                {
+                    Title = "Törlöd az incidenst?",
+                    Content = "",
+                    PrimaryButtonText = "Törlés",
+                    SecondaryButtonText = "Mégse",
+                    IsErrorDialog = true
+                };
+
+                if (await contentDialogHost.ShowDialogAsync(dialog) != ContentDialogHost.ContentDialogResult.Primary)
+                {
+                    return;
+                }
+            }
+
+            QuestionManager.RemoveQuestion(targetQuestion);
+        }
         private void Control_OrderingClick(object sender, string direction)
         {
             var button = (QuestionControl)sender;
@@ -190,111 +295,39 @@ namespace EscapeRoom
             button.ID = newID;
             tbreplacedButton.ID = ID;
         }
-
-        async Task CallQuestionEditDialog(bool create, Question question, Dialogs.QuestionEditDialogContent comingfromPrev = null)
+        private async void debugOverlayButton_Click(object sender, RoutedEventArgs e)
         {
             ContentDialog dialog = new ContentDialog()
             {
-                Title = create ? "Új kérdés létrehozása" : "Kérdés módosítása",
-                PrimaryButtonText = create ? "Létrehozás" : "Mentés",
-                SecondaryButtonText = "Mégse",
-                IsDismissableByTouchBlocker = false
+                Title = "Test a question",
+                PrimaryButtonText = "Test!",
+                SecondaryButtonText = "Cancel"
             };
 
-            Dialogs.QuestionEditDialogContent dialogContent;
-
-            if (comingfromPrev == null)
-                dialogContent = new Dialogs.QuestionEditDialogContent(question);
-            else
-                dialogContent = comingfromPrev;
-
-            dialog.Content = dialogContent;
+            TextField idbox = new TextField() { Title = "Enter ID", Margin = new Thickness(5), Text = "0" };
+            dialog.Content = idbox;
 
             if (await contentDialogHost.ShowDialogAsync(dialog) == ContentDialogHost.ContentDialogResult.Primary)
             {
-                Question newQuestion;
-
-                try
-                {
-                    newQuestion = dialogContent.BuildQuestion();
-                }
-                catch (Exception ex)
-                {
-                    await contentDialogHost.TextContentDialogAsync("Could not save question!", ex.Message, true);
-
-                    // There was an error.
-                    // Re-call the exact same dialog that the user just witnessed.
-
-                    // detach the previous dialog's content so we can re-use it
-                    dialog.Content = null;
-
-                    // re-call the dialog with the same Content
-                    await CallQuestionEditDialog(create, question, dialogContent);
-
-                    return;
-                }
-
-                if (create) // creating a new question
-                    QuestionManager.AddQuestion(newQuestion);
-                else // modifying an existing question
-                    QuestionManager.ModifyQuestion(newQuestion);
+                Question quest = QuestionManager.GetQuestionByID(int.Parse(idbox.Text));
+                TestQuestion(quest);
             }
         }
-
-        private async void Control_Click(object sender, EventArgs e)
+        private void automaticButton_Click(object sender, RoutedEventArgs e)
         {
-            Question question = (Question)sender;
-            await CallQuestionEditDialog(create: false, question);
+            LaunchAuto();
         }
 
-        private void Control_PlayClick(object sender, EventArgs e)
+        #endregion
+
+        #region Theming engine
+        public void SetTheme(ThemeManager.Theme theme)
         {
-            Question targetQuestion = (Question)sender;
+            Config.Theme = theme;
+            ConfigurationManager.SerializeConfigJSON(Config);
 
-            GameWindow overlay = new GameWindow(targetQuestion);
-            overlay.Show(); overlay.Activate();
+            CheckThemeChanges();
         }
-
-        private async void Control_DeleteClick(object sender, EventArgs e)
-        {
-            Question targetQuestion = (Question)sender;
-
-            if (!Keyboard.IsKeyDown(Key.LeftShift))
-            {
-                ContentDialog dialog = new ContentDialog()
-                {
-                    Title = "Törlöd az incidenst?",
-                    Content = "",
-                    PrimaryButtonText = "Törlés",
-                    SecondaryButtonText = "Mégse",
-                    IsErrorDialog = true
-                };
-
-                if (await contentDialogHost.ShowDialogAsync(dialog) != ContentDialogHost.ContentDialogResult.Primary)
-                {
-                    return;
-                }
-            }
-
-            QuestionManager.RemoveQuestion(targetQuestion);
-        }
-
-        private async void newButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (!Keyboard.IsKeyDown(Key.LeftShift))
-                await CallQuestionEditDialog(true, new Question());
-            else
-            {
-                if (QuestionManager.GetQuestionCount() == 0)
-                {
-                    contentDialogHost.TextContentDialog("Could not create question", "There isn't a question to duplicate.", true);
-                    return;
-                }
-                QuestionManager.DuplicateQuestion();
-
-            }
-        }
-
         public void CheckThemeChanges()
         {
             ThemeManager_ConfigChanged(null, null);
@@ -338,7 +371,6 @@ namespace EscapeRoom
 
             Theming_Handled = true;
         }
-
         RenderTargetBitmap Screenshot(FrameworkElement element)
         {
             RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap((int)element.ActualWidth, (int)element.ActualHeight, 96, 96, PixelFormats.Pbgra32);
@@ -348,11 +380,22 @@ namespace EscapeRoom
 
             return renderTargetBitmap;
         }
+        #endregion
 
+        #region Window events
+        private async void settingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            ContentDialog dialog = new ContentDialog() { Title = "Settings", PrimaryButtonText = "Accept" };
+            dialog.Content = new SettingsDialogContent();
+
+            await contentDialogHost.ShowDialogAsync(dialog);
+            LoadConfiguration();
+        }
         private async void Window_PreviewKeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (Keyboard.IsKeyDown(Key.LeftCtrl))
-            {// new question
+            {
+                // new question
                 if (e.Key == Key.N & !DebugFeatures)
                     newButton_Click(null, null);
 
@@ -390,6 +433,17 @@ namespace EscapeRoom
 
                     CheckThemeChanges();
                 }
+
+                if (Keyboard.IsKeyDown(Key.LeftCtrl))
+                {
+                    if (e.Key == Key.Q)
+                        Config.Theme = ThemeManager.Theme.Light;
+                    else if (e.Key == Key.E)
+                        Config.Theme = ThemeManager.Theme.Dark;
+
+                    if (e.Key == Key.Q || e.Key == Key.E)
+                        CheckThemeChanges();
+                }
             }
 
             if (Keyboard.IsKeyUp(Key.LeftShift))
@@ -398,9 +452,10 @@ namespace EscapeRoom
                 newButton.Text = "Új kérdés";
 
                 shiftdeletewarningTextBlock.Visibility = Visibility.Hidden;
+
+                debug_ClearJSON.Text = "(DEBUG) Delete all user questions";
             }
         }
-
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (contentDialogHost.Visibility == Visibility.Visible)
@@ -412,57 +467,121 @@ namespace EscapeRoom
                 newButton.Text = "Utolsó duplikálása";
 
                 shiftdeletewarningTextBlock.Visibility = Visibility.Visible;
+
+                debug_ClearJSON.Text = "(DEBUG) Clear Quests JSON file";
             }
         }
-
-        private async void debugOverlayButton_Click(object sender, RoutedEventArgs e)
-        {
-            ContentDialog dialog = new ContentDialog()
-            {
-                Title = "Test a question",
-                PrimaryButtonText = "Test!",
-                SecondaryButtonText = "Cancel"
-            };
-
-            TextField idbox = new TextField() { Title = "Enter ID", Margin = new Thickness(5), Text = "0" };
-            dialog.Content = idbox;
-
-            if (await contentDialogHost.ShowDialogAsync(dialog) == ContentDialogHost.ContentDialogResult.Primary)
-            {
-                GameWindow overlay = new GameWindow(QuestionManager.GetQuestionByID(int.Parse(idbox.Text)));
-                overlay.Show(); overlay.Activate();
-            }
-        }
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             // Close the game window(s) we create.
             Application.Current.Shutdown();
+        }
+        #endregion
+
+        #region Game window
+        /// <summary>
+        /// Creates and shows a game window without linking any automatic behaviors.
+        /// </summary>
+        /// <param name="question"></param>
+        void TestQuestion(Question question)
+        {
+            var gameWindow = CreateGame(question);
+        }
+        GameWindow CreateGame(Question question)
+        {
+            GameWindow window = new GameWindow(question);
+            window.Show(); window.Activate();
+
+            return window;
+        }
+        /// <summary>
+        /// Creates a game window that will cycle through the questions in an automatic fashion.
+        /// </summary>
+        /// <param name="question"></param>
+        GameWindow CreateGameAuto(List<Question> questList)
+        {
+            GameWindow window = new GameWindow(questList);
+            window.Show(); window.Activate();
+
+            return window;
+        }
+
+        void LaunchAuto()
+        {
+            List<Question> questList = QuestionManager.GetQuestsFromJSON();
+            GameWindow gameWindow_Auto = CreateGameAuto(questList);
+
+            // hook up events
+            gameWindow_Auto.OnLoading += GameWindow_Auto_OnLoading;
+            gameWindow_Auto.OnSuccess += GameWindow_Auto_OnSuccess;
+            gameWindow_Auto.OnFailure += GameWindow_Auto_OnFailure;
+        }
+        private void GameWindow_Auto_OnLoading(object sender, Question e)
+        {
+
+        }
+        private void GameWindow_Auto_OnSuccess(object sender, Question e)
+        {
+
+        }
+        private void GameWindow_Auto_OnFailure(object sender, Question e)
+        {
+
+        }
+        #endregion
+        
+        #region Debug
+        public bool DebugFeatures
+        {
+            get { return Config.DebugFeatures; }
+            set
+            {
+                if (value)
+                {
+                    Config.DebugFeatures = true;
+                    debugRow.Height = new GridLength(1, GridUnitType.Auto);
+                    debugOverlayButton.Visibility = Visibility.Visible;
+
+                    debug_versionBlock.Visibility = Visibility.Visible;
+                    release_versionString.Visibility = Visibility.Collapsed;
+
+                    this.Title = string.Format("EscapeRoom ({0}) [development]", Version.VersionNumber);
+                }
+                else
+                {
+                    Config.DebugFeatures = false;
+                    debugRow.Height = new GridLength(0, GridUnitType.Pixel);
+                    debugOverlayButton.Visibility = Visibility.Collapsed;
+
+                    debug_versionBlock.Visibility = Visibility.Collapsed;
+                    release_versionString.Visibility = Visibility.Visible;
+
+                    this.Title = "EscapeRoom";
+                }
+
+                ConfigurationManager.SerializeConfigJSON(Config);
+            }
         }
 
         private void debug_ReadQuestsJSONFile_Click(object sender, RoutedEventArgs e)
         {
             contentDialogHost.TextContentDialog("", QuestionManager.ReadQuestsListFromJSON_Literal());
         }
-
         private void debug_ClearJSON_Click(object sender, RoutedEventArgs e)
         {
-            QuestionManager.ClearQuestionList();
+            if (Keyboard.IsKeyDown(Key.LeftShift))
+                QuestionManager.ClearQuestionList();
+            else
+            {
+                List<Question> list = QuestionManager.GetQuestsFromJSON();
+                foreach (Question quest in list)
+                {
+                    if (quest.QuestionType != Question.QuestType.MetaQuestion)
+                        QuestionManager.RemoveQuestion(quest, false);
+                }
+                LoadQuestions();
+            }
         }
-
-        private void automaticButton_Click(object sender, RoutedEventArgs e)
-        {
-            contentDialogHost.TextContentDialog("Todo",
-                "This should automatically go through all questions in order, by ID.");
-        }
-
-        private async void settingsButton_Click(object sender, RoutedEventArgs e)
-        {
-            ContentDialog dialog = new ContentDialog() { Title = "Settings", PrimaryButtonText = "Accept" };
-            dialog.Content = new SettingsDialogContent();
-
-            await contentDialogHost.ShowDialogAsync(dialog);
-            LoadConfiguration();
-        }
+        #endregion
     }
 }

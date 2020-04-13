@@ -1,12 +1,24 @@
 ﻿TODO: 
-- [game] Handle the question types
-- [game] Handle question responses (correct/wrong)
+- [game & controller] Handle the question types #DONE#
+- [game] Handle question responses (correct/wrong) (done?)
 - [engine] Implement image/video support (quests can/will have images)
-            Image: DONE
+            Image: #DONE#
             Local video:
             Online video:
             YouTube video:
-- [all] Implement UI control sizing customizability
-- [all] Implement a game ending
-- [all] Implement automating the game with customizations
+- [game] Implement UI control sizing customizability
+- [game & controller] Implement game success & failure
+         Part 1: proprietary implementation for client
+            Trivia:
+                - show image for a few seconds then go to next question
+                - final question sho
+            Implementation:
+                - If launching from auto (handled by controller):
+                    - Load the question
+                    - On success, invoke a Success event
+                    - When success timer runs out, invoke a Loading event and load the next question in the background from the controller
+                    - Instantiate the SuccessImage and SuccessText when calling Success
+            Part 2: proper implementation
+                - Along with the above option, add regular Success and Fail sequences. (customization, with auto in mind)
+- [game & controller] Implement automating the game with customizations
 - [all] Code cleanup (?)

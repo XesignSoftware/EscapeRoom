@@ -15,9 +15,13 @@ namespace EscapeRoom.Configuration
         public bool DebugFeatures = false;
 #endif
 
-        public bool IsThemingFirstTimeDone { get; set; } = false;
+        // TODO: client requirements, change for production
+        public Question.QuestSuccessType DefaultQuestSuccessType { get; set; } = Question.QuestSuccessType.ImageText;
+        public Question.QuestFailureType DefaultQuestFailureType { get; set; } = Question.QuestFailureType.ShakePlayGrid;
 
-        public ThemeManager.Theme? _Theme;
+        public bool Animations { get; set; } = true;
+
+        ThemeManager.Theme? _Theme;
         public ThemeManager.Theme? Theme
         {
             get
@@ -29,16 +33,16 @@ namespace EscapeRoom.Configuration
             }
             set { _Theme = value; }
         }
-
         public ThemeManager.Theme Theme_Default { get; set; } = ThemeManager.Theme.Dark;
 
-        public ThemeManager.Accent? _UserAccent;
-        public ThemeManager.Accent? _Accent;
+        public ThemeManager.Accent? UserAccent = null;
+
+        ThemeManager.Accent _Accent;
         public ThemeManager.Accent? Accent
         {
             get
             {
-                if (_UserAccent == null)
+                if (UserAccent == null)
                 {
                     if (Theme == ThemeManager.Theme.Dark)
                         return Accent_Dark;
@@ -46,9 +50,15 @@ namespace EscapeRoom.Configuration
                         return Accent_Light;
                 }
                 else
-                    return _UserAccent;
+                    return _Accent;
             }
-            set { _Accent = value; }
+            set
+            {
+                if (!value.HasValue)
+                    UserAccent = null;
+                else
+                    _Accent = value.Value;
+            }
         }
         public ThemeManager.Accent Accent_Dark { get; set; } = ThemeManager.Accent.Pink;
         public ThemeManager.Accent Accent_Light { get; set; } = ThemeManager.Accent.Blue;

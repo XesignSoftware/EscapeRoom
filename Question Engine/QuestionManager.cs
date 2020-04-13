@@ -11,37 +11,75 @@ namespace EscapeRoom.QuestionHandling
 {
     public class QuestionManager
     {
+        public string QuestsJSON = "EscapeRoom_Quests.json";
         public QuestionManager()
         {
 
         }
+        public event EventHandler QuestionsChanged;
+        public event EventHandler RemoveFailed;
+        public event EventHandler ModifyFailed;
 
-        public List<Question> ReadQuestsListFromJSON()
+        #region JSON Read & get
+        public string GetPathForJSON(string file)
         {
-            string file = File.ReadAllText(GetPathForJSON(QuestsJSON));
-            return JsonConvert.DeserializeObject<List<Question>>(file);
-        }
+            string configDir = AppDomain.CurrentDomain.BaseDirectory + @"Configuration\";
+            string filePath = configDir + file;
 
+            // If the configuration directory doesn't exist, create it.
+            if (!Directory.Exists(configDir))
+                Directory.CreateDirectory(configDir);
+
+            if (!File.Exists(filePath))
+                WriteEmptyQuestsJSON(filePath);
+
+            return configDir + file;
+        }
         public string ReadQuestsListFromJSON_Literal()
         {
             return File.ReadAllText(GetPathForJSON(QuestsJSON));
         }
+        
+        #endregion
 
-        public string QuestsJSON = "EscapeRoom_Quests.json";
-
+        #region Question functions
+        public List<Question> GetQuestsFromJSON()
+        {
+            string file = File.ReadAllText(GetPathForJSON(QuestsJSON));
+            return JsonConvert.DeserializeObject<List<Question>>(file);
+        }
         public int GetQuestionCount()
         {
-            return ReadQuestsListFromJSON().Count;
+            return GetQuestsFromJSON().Count;
+        }
+        public Question GetQuestionByID(int id)
+        {
+            List<Question> list = GetQuestsFromJSON();
+
+            bool successful = false;
+
+            int counter = 0;
+            foreach (Question quest in list)
+            {
+                if (quest.QuestID == id)
+                {
+                    successful = true; break;
+                }
+                counter++;
+            }
+
+            if (successful)
+                return list[counter];
+            else
+                return null;
         }
 
-        public event EventHandler QuestionsChanged;
-
-        public void AddQuestion(Question Question)
+        public void AddQuestion(Question Question, bool invokeEvent = true)
         {
-            List<Question> list = ReadQuestsListFromJSON();
+            List<Question> list = GetQuestsFromJSON();
 
             // check if quest has an ID
-            if (!Question.QuestID.HasValue) // if there's no quest ID, assign +1 based on list
+            if (!Question.QuestID.HasValue & Question.QuestionType != Question.QuestType.MetaQuestion) // if there's no quest ID, assign +1 based on list
             {
                 int itemCount = list.Count;
                 Question.QuestID = itemCount;
@@ -52,15 +90,24 @@ namespace EscapeRoom.QuestionHandling
             // Serialize the list into JSON
             SerializeQuestsJSON(list);
 
+            // add meta quest if doesn't exist
+            Question metaQuest = null;
+            foreach (Question quest in list)
+            {
+                if (quest.QuestionType == Question.QuestType.MetaQuestion)
+                    metaQuest = quest;
+            }
+
+            if (metaQuest == null)
+                AddQuestion(new Question() { QuestionTitle = "Game configuration", QuestionType = Question.QuestType.MetaQuestion });
+
             // call event
-            QuestionsChanged?.Invoke(null, null);
+            if (invokeEvent)
+                QuestionsChanged?.Invoke(null, null);
         }
-
-        public event EventHandler RemoveFailed;
-
-        public void RemoveQuestion(int QuestionID)
+        public void RemoveQuestion(int QuestionID, bool invokeEvent = true)
         {
-            List<Question> list = ReadQuestsListFromJSON();
+            List<Question> list = GetQuestsFromJSON();
             bool removeSuccessful = false;
 
             // find ID of Question in list
@@ -86,12 +133,19 @@ namespace EscapeRoom.QuestionHandling
             // Serialize the list into JSON
             SerializeQuestsJSON(list);
 
-            QuestionsChanged?.Invoke(null, null);
+            if (invokeEvent)
+                QuestionsChanged?.Invoke(null, null);
         }
-
+        public void RemoveQuestion(Question question, bool invokeEvent = true)
+        {
+            if (question.QuestID.HasValue)
+                RemoveQuestion(question.QuestID.Value, invokeEvent);
+            else
+                throw new Exception("QuestID is null!");
+        }
         public void RemoveLastQuestion()
         {
-            List<Question> list = ReadQuestsListFromJSON();
+            List<Question> list = GetQuestsFromJSON();
 
             // find ID of last question
             if (list.Count > 1)
@@ -101,18 +155,9 @@ namespace EscapeRoom.QuestionHandling
             else
                 throw new Exception("No question to delete!");
         }
-
-        public void RemoveQuestion(Question question)
-        {
-            if (question.QuestID.HasValue)
-                RemoveQuestion(question.QuestID.Value);
-            else
-                throw new Exception("QuestID is null!");
-        }
-
         public void OrderQuestion(int oldID, int newID)
         {
-            List<Question> list = ReadQuestsListFromJSON();
+            List<Question> list = GetQuestsFromJSON();
 
             var quest = list[oldID];
             var tbreplacedQuest = list[newID];
@@ -139,12 +184,9 @@ namespace EscapeRoom.QuestionHandling
             //QuestionsChanged?.Invoke(null, null);
             */
         }
-
-        public event EventHandler ModifyFailed;
-
-        public void ModifyQuestion(Question newQuestion)
+        public void ModifyQuestion(Question newQuestion, bool invokeEvent = true)
         {
-            List<Question> list = ReadQuestsListFromJSON();
+            List<Question> list = GetQuestsFromJSON();
 
             // find the Question to modify
             int counter = 0;
@@ -171,28 +213,33 @@ namespace EscapeRoom.QuestionHandling
             // Serialize the list
             SerializeQuestsJSON(list);
 
-            QuestionsChanged?.Invoke(null, null);
+            if (invokeEvent)
+                QuestionsChanged?.Invoke(null, null);
         }
-
-        public void DuplicateQuestion()
+        public void DuplicateQuestion(bool invokeEvent = true)
         {
-            DuplicateQuestion(GetQuestionByID(GetQuestionCount() - 1));
-        }
+            List<Question> list = GetQuestsFromJSON();
+            Question quest = GetQuestionByID((GetQuestionCount() - 1));
+            if (quest == null) // last entry is meta
+                quest = GetQuestionByID(GetQuestionCount() - 2);
 
-        public void DuplicateQuestion(Question questToDuplicate)
+            DuplicateQuestion(quest, invokeEvent);
+        }
+        public void DuplicateQuestion(Question questToDuplicate, bool invokeEvent = true)
         {
             var newQuestion = questToDuplicate;
             newQuestion.QuestID += 1;
 
-            AddQuestion(newQuestion);
+            AddQuestion(newQuestion, invokeEvent);
         }
+        #endregion
 
+        #region JSON functions
         public void ClearQuestionList()
         {
             SerializeQuestsJSON(new List<Question>());
             QuestionsChanged?.Invoke(null, null);
         }
-
         public void SerializeQuestsJSON(List<Question> list)
         {
             using (StreamWriter file = File.CreateText(GetPathForJSON(QuestsJSON)))
@@ -201,22 +248,6 @@ namespace EscapeRoom.QuestionHandling
                 ser.Serialize(file, list);
             }
         }
-
-        public string GetPathForJSON(string file)
-        {
-            string configDir = AppDomain.CurrentDomain.BaseDirectory + @"Configuration\";
-            string filePath = configDir + file;
-
-            // If the configuration directory doesn't exist, create it.
-            if (!Directory.Exists(configDir))
-                Directory.CreateDirectory(configDir);
-
-            if (!File.Exists(filePath))
-                WriteEmptyQuestsJSON(filePath);
-
-            return configDir + file;
-        }
-
         void WriteEmptyQuestsJSON(string path)
         {
             using (StreamWriter file = File.CreateText(path))
@@ -225,28 +256,7 @@ namespace EscapeRoom.QuestionHandling
                 ser.Serialize(file, new List<Question>());
             }
         }
-
-        public Question GetQuestionByID(int id)
-        {
-            List<Question> list = ReadQuestsListFromJSON();
-
-            bool successful = false;
-
-            int counter = 0;
-            foreach (Question quest in list)
-            {
-                if (quest.QuestID == id)
-                {
-                    successful = true; break;
-                }
-                counter++;
-            }
-
-            if (successful)
-                return list[counter];
-            else
-                return null;
-        }
+        #endregion
 
         public bool IsValidMediaFile(string mediaPath)
         {
@@ -259,7 +269,6 @@ namespace EscapeRoom.QuestionHandling
                     return false;
             }
         }
-
         public string GetFileExtension(string filePath)
         {
             return filePath.Substring(filePath.Length - 4);

@@ -61,6 +61,9 @@
     <Compile Include="Animation.cs" />
     <Compile Include="Configuration\EscapeRoomConfig.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
+    <Compile Include="Dialogs\MetaEditDialogContent.xaml.cs">
+      <DependentUpon>MetaEditDialogContent.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\SettingsDialogContent.xaml.cs">
       <DependentUpon>SettingsDialogContent.xaml</DependentUpon>
     </Compile>
@@ -68,6 +71,10 @@
     <Compile Include="Windows\GameWindow.xaml.cs">
       <DependentUpon>GameWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Dialogs\MetaEditDialogContent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\QuestionEditDialogContent.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

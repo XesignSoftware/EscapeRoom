@@ -34,9 +34,7 @@ namespace EscapeRoom.Dialogs
             Config = MainWindow.Config;
             ConfigurationManager = MainWindow.ConfigurationManager;
         }
-
         bool _isLoaded;
-
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             _isLoaded = false;
@@ -51,7 +49,7 @@ namespace EscapeRoom.Dialogs
 
             foreach (XeZrunner.UI.Controls.RadioButton button in accentStackPanel.Children)
             {
-                if (Config._UserAccent == null & button.Text == "Default")
+                if (Config.UserAccent == null & button.Text == "Default")
                 { button.IsActive = true; break; }
                 else if (button.Text == Config.Accent.ToString())
                     button.IsActive = true;
@@ -66,7 +64,6 @@ namespace EscapeRoom.Dialogs
 
             _isLoaded = true;
         }
-
         void ValidateThemeChanges()
         {
             if (!_isLoaded)
@@ -77,7 +74,6 @@ namespace EscapeRoom.Dialogs
             ConfigurationManager.SerializeConfigJSON(Config);
             MainWindow.CheckThemeChanges();
         }
-
         void ValidateAccentChanges()
         {
             if (!_isLoaded)
@@ -86,15 +82,16 @@ namespace EscapeRoom.Dialogs
             foreach (XeZrunner.UI.Controls.RadioButton button in accentStackPanel.Children)
             {
                 if (button.Text == "Default" & button.IsActive)
-                    Config._UserAccent = null;
+                    Config.UserAccent = null;
                 else if (button.IsActive)
-                    Config._UserAccent = ThemeManager.GetAccentFromString(button.Text);
+                    Config.UserAccent = ThemeManager.GetAccentFromString(button.Text);
             }
 
             ConfigurationManager.SerializeConfigJSON(Config);
             MainWindow.CheckThemeChanges();
         }
 
+        #region Dialog content handling
         private void ThemeToggleButton_IsActiveChanged(object sender, EventArgs e)
         {
             ValidateThemeChanges();
@@ -115,5 +112,6 @@ namespace EscapeRoom.Dialogs
         {
             ConfigurationManager.ResetConfiguration();
         }
+        #endregion
     }
 }

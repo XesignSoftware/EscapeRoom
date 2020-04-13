@@ -22,9 +22,7 @@ namespace EscapeRoom
         {
             InitializeComponent();
         }
-
         public Question Question { get; set; }
-
         public QuestionControl(Question inc)
         {
             InitializeComponent();
@@ -33,11 +31,20 @@ namespace EscapeRoom
 
             if (inc.QuestID.HasValue)
                 ID = inc.QuestID.Value;
+            else
+            {
+                ID_TextBlock.Text = "configuration";
+                iconTextBlock.Text = "\ue90f";
+                DisableColDef(coldef_Delete);
+                DisableColDef(coldef_Ordering);
+                DisableRowDef(rowdef_Description);
+            }
             Type = inc.QuestionType.ToString();
             Title = inc.QuestionTitle;
             Description = inc.QuestionDescription;
         }
 
+        #region Public properties
         int _ID;
         public int ID
         {
@@ -47,7 +54,7 @@ namespace EscapeRoom
 
         public int NewID
         {
-            set { ID_TextBlock.Text = string.Format("(was {0}, will be {1})", ID.ToString(),  value.ToString()); }
+            set { ID_TextBlock.Text = string.Format("(was {0}, will be {1})", ID.ToString(), value.ToString()); }
         }
 
         public string Type
@@ -67,11 +74,24 @@ namespace EscapeRoom
             get { return Desc_TextBlock.Text; }
             set { Desc_TextBlock.Text = value; }
         }
+        #endregion
 
         public event EventHandler Click;
         public event EventHandler PlayClick;
         public event EventHandler DeleteClick;
         public event EventHandler<string> OrderingClick;
+
+        #region Control content handling
+        void DisableColDef(ColumnDefinition coldef)
+        {
+            GridLength nullGridLength = new GridLength(0, GridUnitType.Pixel);
+            coldef.Width = nullGridLength;
+        }
+        void DisableRowDef(RowDefinition rowdef)
+        {
+            GridLength nullGridLength = new GridLength(0, GridUnitType.Pixel);
+            rowdef.Height = nullGridLength;
+        }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -94,5 +114,6 @@ namespace EscapeRoom
 
             OrderingClick?.Invoke(this, (string)button.Tag);
         }
+        #endregion
     }
 }
