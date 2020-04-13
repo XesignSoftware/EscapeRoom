@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using XeZrunner.UI.Controls;
 using XeZrunner.UI.Popups;
 using XeZrunner.UI.Theming;
@@ -81,8 +82,7 @@ namespace EscapeRoom
             debug_versionString.Text = string.Format("{0} [{1}]", Version.VersionNumber, Version.BuildType);
             release_versionString.Text = string.Format("version: {0}", Version.VersionNumber);
         }
-
-        private async void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private async void Dispatcher_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
 
@@ -317,7 +317,6 @@ namespace EscapeRoom
         {
             LaunchAuto();
         }
-
         #endregion
 
         #region Theming engine
@@ -393,21 +392,21 @@ namespace EscapeRoom
         }
         private async void Window_PreviewKeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
+#if DEBUG
+            if (Keyboard.IsKeyDown(Key.LeftShift) & e.Key == Key.F12)
+            {
+                DebugFeatures = !DebugFeatures;
+
+                if (DebugFeatures)
+                    contentDialogHost.TextContentDialog("Debug features re-enabled!", "", true);
+            }
+#endif
+
             if (Keyboard.IsKeyDown(Key.LeftCtrl))
             {
                 // new question
                 if (e.Key == Key.N & !DebugFeatures)
                     newButton_Click(null, null);
-
-#if DEBUG
-                if (e.Key == Key.F12)
-                {
-                    DebugFeatures = !DebugFeatures;
-
-                    if (DebugFeatures)
-                        contentDialogHost.TextContentDialog("Debug features re-enabled!", "", true);
-                }
-#endif
 
                 // Debug shortcuts
                 if (!DebugFeatures)

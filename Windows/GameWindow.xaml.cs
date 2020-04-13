@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -93,7 +94,6 @@ namespace EscapeRoom.Windows
 
             titleBar.SetResourceReference(BackgroundProperty, "Red");
         }
-
         void LoadQuestion(Question quest = null)
         {
             if (quest != null)
@@ -265,7 +265,6 @@ namespace EscapeRoom.Windows
         #endregion
 
         #region Input & choices handling
-
         void PrepareQuestInput()
         {
             switch (Question.QuestionInputType)
@@ -289,23 +288,24 @@ namespace EscapeRoom.Windows
                         // create choice buttons
                         foreach (string choice in Question.QuestionChoices)
                         {
+                            string finalChoice = Regex.Replace(choice, @"\t|\n|\r", "");
                             if (choice.StartsWith("*"))
                             {
-                                string finalChoice = choice.Substring(1);
+                                finalChoice = finalChoice.Substring(1);
                                 input_choicesStackPanel.Children.Add(CreateChoiceButton(finalChoice, true));
 
                                 // set global solution string
                                 QuestionInputSolution = finalChoice;
                             }
                             else
-                                input_choicesStackPanel.Children.Add(CreateChoiceButton(choice));
+                                input_choicesStackPanel.Children.Add(CreateChoiceButton(finalChoice));
                         }
 
                         break;
                     }
             }
         }
-
+        public event RoutedEventHandler ChoiceClicked;
         NavMenuItem CreateChoiceButton(string text, bool solution = false)
         {
             NavMenuItem button = new NavMenuItem() { Icon = "", Text = text };
@@ -316,16 +316,16 @@ namespace EscapeRoom.Windows
             button.Click += input_choiceClicked;
             return button;
         }
-
-        public event RoutedEventHandler ChoiceClicked;
-        private void input_choiceClicked(object sender, RoutedEventArgs e)
+        private async void input_choiceClicked(object sender, RoutedEventArgs e)
         {
             ChoiceClicked?.Invoke(sender, e);
 
             var button = (NavMenuItem)sender;
 
             if ((string)button.Tag == "solution")
-                Success();
+                await Success();
+            else
+                await Failure();
         }
 
         private async void input_TextField_PreviewKeyUp(object sender, KeyEventArgs e)
@@ -338,7 +338,6 @@ namespace EscapeRoom.Windows
                     await Failure();
             }
         }
-
         #endregion
 
         #region Result handling
@@ -353,7 +352,6 @@ namespace EscapeRoom.Windows
             switch (@event)
             {
                 case ResultEvent.Success:
-                case ResultEvent.Failure:
                     PlayStoryboard(result_In); break;
                 case ResultEvent.Forwards:
                 case ResultEvent.Dismiss:
@@ -383,7 +381,7 @@ namespace EscapeRoom.Windows
                             case Question.QuestFailureType.ShakePlayGrid:
                                 PlayStoryboard(playGrid_ShakeAnim); break;
                             case Question.QuestFailureType.UI:
-                                throw EX_UIRESULT_TODO;
+                                PlayStoryboard(result_In); throw EX_UIRESULT_TODO;
                         }
                         break;
                     }
@@ -403,10 +401,10 @@ namespace EscapeRoom.Windows
         /// The amount of time to wait upon succeeding. (Auto)
         /// </summary>
         public TimeSpan SuccessTime { get; set; } = TimeSpan.FromSeconds(3);
-        TimeSpan _failureTime;
+        TimeSpan? _failureTime = null;
         public TimeSpan FailureTime
         {
-            get { if (_failureTime == null) return SuccessTime; else return _failureTime; }
+            get { if (!_failureTime.HasValue) return SuccessTime; else return _failureTime.Value; }
             set { _failureTime = value; }
         }
 
@@ -437,6 +435,8 @@ namespace EscapeRoom.Windows
                 return;
 
             await Task.Delay(FailureTime);
+
+            SetTitlebarColor("Accent");
             // TODO: Display media on failure?
             //Forwards();
         }
@@ -454,8 +454,8 @@ namespace EscapeRoom.Windows
                 auto_counter++;
                 if (auto_counter != QuestionList.Count)
                 {
-                    Invoke_Loading(auto_counter);
                     HandleResultView(ResultEvent.Forwards);
+                    Invoke_Loading(auto_counter);
                 }
                 else
                     Ending();
@@ -487,7 +487,15 @@ namespace EscapeRoom.Windows
             List<int> questIDList = new List<int>();
 
             foreach (Question quest in questList)
-                questIDList.Add(quest.QuestID.Value);
+                if (quest.QuestID == null)
+                {
+                    questList.Remove(quest);
+                    break;
+                }
+
+            foreach (Question quest in questList)
+                if (quest.QuestID != null)
+                    questIDList.Add(quest.QuestID.Value);
 
             foreach (int questID in questIDList)
                 finalQuestList.Add(questList[questID]);
@@ -551,10 +559,13 @@ namespace EscapeRoom.Windows
                 if (value)
                 {
                     titleBar.Visibility = Visibility.Visible;
-                    SuccessTime = TimeSpan.FromSeconds(.3);
+                    SuccessTime = TimeSpan.FromSeconds(1);
                 }
                 else
+                {
                     titleBar.Visibility = Visibility.Collapsed;
+                    SuccessTime = TimeSpan.FromSeconds(3);
+                }
             }
         }
 

@@ -81,7 +81,7 @@ namespace EscapeRoom.QuestionHandling
             // check if quest has an ID
             if (!Question.QuestID.HasValue & Question.QuestionType != Question.QuestType.MetaQuestion) // if there's no quest ID, assign +1 based on list
             {
-                int itemCount = list.Count;
+                int itemCount = list.Count -1;
                 Question.QuestID = itemCount;
             }
 

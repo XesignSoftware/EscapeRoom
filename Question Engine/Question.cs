@@ -27,8 +27,8 @@ namespace EscapeRoom
         public string QuestionInputSolution { get; set; }
         public List<string> QuestionChoices { get; set; }
 
-        public QuestSuccessType QuestionSuccessType { get; set; }
-        public QuestFailureType QuestionFailureType { get; set; }
+        public QuestSuccessType QuestionSuccessType { get; set; } = QuestSuccessType.ImageText;
+        public QuestFailureType QuestionFailureType { get; set; } = QuestFailureType.ShakePlayGrid;
         public string QuestionSuccessMediaPath { get; set; }
         public bool SkipOnFailure { get; set; } = false;
     }
