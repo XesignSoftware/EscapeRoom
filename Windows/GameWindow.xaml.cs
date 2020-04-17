@@ -477,15 +477,7 @@ namespace EscapeRoom.Windows
             List<int> questIDList = new List<int>();
 
             foreach (Question quest in questList)
-                if (quest.QuestID == null)
-                {
-                    questList.Remove(quest);
-                    break;
-                }
-
-            foreach (Question quest in questList)
-                if (quest.QuestID != null)
-                    questIDList.Add(quest.QuestID.Value);
+                questIDList.Add(quest.QuestID.Value);
 
             foreach (int questID in questIDList)
                 finalQuestList.Add(questList[questID]);

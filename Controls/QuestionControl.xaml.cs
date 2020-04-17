@@ -51,24 +51,20 @@ namespace EscapeRoom
             get { return _ID; }
             set { _ID = value; ID_TextBlock.Text = value.ToString(); }
         }
-
         public int NewID
         {
             set { ID_TextBlock.Text = string.Format("(was {0}, will be {1})", ID.ToString(), value.ToString()); }
         }
-
         public string Type
         {
             get { return Type_TextBlock.Text; }
             set { Type_TextBlock.Text = value; }
         }
-
         public string Title
         {
             get { return Title_TextBlock.Text; }
             set { Title_TextBlock.Text = value; }
         }
-
         public string Description
         {
             get { return Desc_TextBlock.Text; }

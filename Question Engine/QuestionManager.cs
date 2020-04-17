@@ -77,9 +77,9 @@ namespace EscapeRoom.QuestionHandling
             List<Question> list = GetQuestsFromJSON();
 
             // check if quest has an ID
-            if (!Question.QuestID.HasValue & Question.QuestionType != Question.QuestType.MetaQuestion) // if there's no quest ID, assign +1 based on list
+            if (!Question.QuestID.HasValue) // if there's no quest ID, assign +1 based on list
             {
-                int itemCount = list.Count -1;
+                int itemCount = list.Count == 0 ? 0 : list.Count;
                 Question.QuestID = itemCount;
             }
 
@@ -87,17 +87,6 @@ namespace EscapeRoom.QuestionHandling
 
             // Serialize the list into JSON
             SerializeQuestsJSON(list);
-
-            // add meta quest if doesn't exist
-            Question metaQuest = null;
-            foreach (Question quest in list)
-            {
-                if (quest.QuestionType == Question.QuestType.MetaQuestion)
-                    metaQuest = quest;
-            }
-
-            if (metaQuest == null)
-                AddQuestion(new Question() { QuestionTitle = "Game configuration", QuestionType = Question.QuestType.MetaQuestion });
 
             // call event
             if (invokeEvent)
@@ -177,10 +166,8 @@ namespace EscapeRoom.QuestionHandling
 
             SerializeQuestsJSON(list);
 
-            /* Don't invoke QuestionsChanged, as we want to manually re-arrange the items in the controller
-             * for performance!
+            /* Don't invoke QuestionsChanged, as we want to manually re-arrange the items in the controller for performance! */
             //QuestionsChanged?.Invoke(null, null);
-            */
         }
         public void ModifyQuestion(Question newQuestion, bool invokeEvent = true)
         {
@@ -218,8 +205,6 @@ namespace EscapeRoom.QuestionHandling
         {
             List<Question> list = GetQuestsFromJSON();
             Question quest = GetQuestionByID((GetQuestionCount() - 1));
-            if (quest == null) // last entry is meta
-                quest = GetQuestionByID(GetQuestionCount() - 2);
 
             DuplicateQuestion(quest, invokeEvent);
         }
@@ -260,9 +245,9 @@ namespace EscapeRoom.QuestionHandling
             {
                 case ".jpg":
                 case ".png":
-                    return true;
+                return true;
                 default:
-                    return false;
+                return false;
             }
         }
         public string GetFileExtension(string filePath)

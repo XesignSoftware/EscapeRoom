@@ -9,7 +9,7 @@ namespace EscapeRoom
 {
     public class Question
     {
-        public enum QuestType { TextQuestion, ImageQuestion, MetaQuestion }
+        public enum QuestType { TextQuestion, ImageQuestion }
         public enum QuestInputType { Input, Choices }
 
         public enum QuestSuccessType { None, ImageText, UI, }

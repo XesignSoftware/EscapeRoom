@@ -39,6 +39,13 @@ namespace EscapeRoom
 
             splashGrid.Visibility = Visibility.Visible;
 
+            if (Keyboard.IsKeyDown(Key.LeftShift) & Keyboard.IsKeyDown(Key.F10))
+            {
+                this.Focus();
+                QuestionManager.ClearQuestionList();
+                contentDialogHost.TextContentDialog("Quests reset", string.Format("The quests have been reset!\n\n{0}", QuestionManager.ReadQuestsListFromJSON_Literal()));
+            }
+
             if (Keyboard.IsKeyDown(Key.LeftShift) & Keyboard.IsKeyDown(Key.F11))
             {
                 this.Focus();
@@ -95,30 +102,17 @@ namespace EscapeRoom
         {
             List<Question> list = QuestionManager.GetQuestsFromJSON(); // get Question list
             List<int> questIDList = new List<int>();
-            Question metaQuestion = null;
 
             foreach (Question quest in list)
-            {
-                if (quest.QuestID != null)
-                    questIDList.Add(quest.QuestID.Value);
-                else
-                {
-                    metaQuestion = quest;
-                }
-            }
-
-            list.Remove(metaQuestion);
+                questIDList.Add(quest.QuestID.Value);
 
             //questIDList.Sort();
 
             // clear containers
             questionListStackPanel.Children.Clear();
-            metaquestionGrid.Children.Clear();
 
             foreach (int questID in questIDList)
                 questionListStackPanel.Children.Add(CreateQuestionControl(list[questID])); // add controls to StackPanel
-            if (metaQuestion != null)
-                metaquestionGrid.Children.Add(CreateQuestionControl(metaQuestion));
         }
         private void QuestionManager_QuestionsChanged(object sender, EventArgs e)
         {
@@ -149,20 +143,12 @@ namespace EscapeRoom
             dialog.IsDismissableByTouchBlocker = true;
 #endif
 
-            if (question.QuestionType == Question.QuestType.MetaQuestion)
-                dialog.Title = "Játékkonfiguráció módosítása";
-
             UIElement dialogContent;
 
             if (comingfromPrev != null)
                 dialogContent = comingfromPrev;
             else
-            {
-                if (question.QuestionType != Question.QuestType.MetaQuestion)
-                    dialogContent = new Dialogs.QuestionEditDialogContent(question);
-                else
-                    dialogContent = new Dialogs.MetaEditDialogContent(question);
-            }
+                dialogContent = new Dialogs.QuestionEditDialogContent(question);
 
             dialog.Content = dialogContent;
 
@@ -172,16 +158,8 @@ namespace EscapeRoom
 
                 try
                 {
-                    if (question.QuestionType != Question.QuestType.MetaQuestion)
-                    {
-                        var dialogContentForEditBuild = (QuestionEditDialogContent)dialogContent;
-                        newQuestion = dialogContentForEditBuild.BuildQuestion();
-                    }
-                    else
-                    {
-                        var dialogContentForMetaBuild = (MetaEditDialogContent)dialogContent;
-                        newQuestion = dialogContentForMetaBuild.BuildQuestion();
-                    }
+                    var dialogContentForEditBuild = (QuestionEditDialogContent)dialogContent;
+                    newQuestion = dialogContentForEditBuild.BuildQuestion();
                 }
                 catch (Exception ex)
                 {
@@ -256,7 +234,7 @@ namespace EscapeRoom
 
         }
 
-        #region Button events
+       // Button events
         private async void newButton_Click(object sender, RoutedEventArgs e)
         {
             if (!Keyboard.IsKeyDown(Key.LeftShift))
@@ -373,7 +351,6 @@ namespace EscapeRoom
             await contentDialogHost.ShowDialogAsync(dialog);
             LoadConfiguration();
         }
-        #endregion
 
         #region Theming engine
         public void SetTheme(ThemeManager.Theme theme)
@@ -523,7 +500,7 @@ namespace EscapeRoom
             // Close the game window(s) we create.
             Application.Current.Shutdown();
         }
-        
+
         #region Debug
         public bool DebugFeatures
         {
@@ -569,10 +546,7 @@ namespace EscapeRoom
             {
                 List<Question> list = QuestionManager.GetQuestsFromJSON();
                 foreach (Question quest in list)
-                {
-                    if (quest.QuestionType != Question.QuestType.MetaQuestion)
-                        QuestionManager.RemoveQuestion(quest, false);
-                }
+                    QuestionManager.RemoveQuestion(quest, false);
                 LoadQuestions();
             }
         }

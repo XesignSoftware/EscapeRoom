@@ -49,7 +49,7 @@
                             <local:QuestionControl />
                         </StackPanel>
                         <Grid x:Name="metaquestionGrid" Grid.Row="1">
-                            <local:QuestionControl />
+                            
                         </Grid>
                     </Grid>
                 </ScrollViewer>
@@ -69,7 +69,7 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
-                        <xezui_buttons:CircularActionButton x:Name="debugOverlayButton" Icon="&#xe74c;" Text="Kérdés tesztelése" Click="debugOverlayButton_Click" />
+                        <xezui_buttons:CircularActionButton x:Name="debugOverlayButton" Icon="&#xe74c;" Text="ID tesztelése" Click="debugOverlayButton_Click" />
                         <xezui_buttons:CircularActionButton x:Name="automaticButton" Icon="&#xe768;" Text="Játék indítása" Click="automaticButton_Click" />
                     </StackPanel>
 

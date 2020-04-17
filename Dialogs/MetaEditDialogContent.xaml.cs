@@ -65,7 +65,7 @@ namespace EscapeRoom.Dialogs
                 QuestID = _question.QuestID,
                 QuestionTitle = _question.QuestionTitle,
                 QuestionDescription = modify_endtextTextField.Text,
-                QuestionType = Question.QuestType.MetaQuestion,
+                //QuestionType = Question.QuestType.MetaQuestion,
                 QuestionMediaPath = finalMediaPath, // return empty when not selected, but don't delete textfield entry
             };
         }
@@ -91,8 +91,10 @@ namespace EscapeRoom.Dialogs
         }
         void UpdateQuestionMedia()
         {
+            /*
             if (_question.QuestionType != Question.QuestType.MetaQuestion)
                 throw new Exception("Invalid MetaQuestion!");
+                */
 
             string mediaPath = media_pathTextField.Text;
 
