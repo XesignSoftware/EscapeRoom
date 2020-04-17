@@ -90,7 +90,7 @@ namespace EscapeRoom
             splash_errorTextBlock.Text = string.Format("Error: {0}", e.Exception.Message);
         }
 
-        #region Question engine
+        // Question engine
         public void LoadQuestions()
         {
             List<Question> list = QuestionManager.GetQuestsFromJSON(); // get Question list
@@ -119,6 +119,10 @@ namespace EscapeRoom
                 questionListStackPanel.Children.Add(CreateQuestionControl(list[questID])); // add controls to StackPanel
             if (metaQuestion != null)
                 metaquestionGrid.Children.Add(CreateQuestionControl(metaQuestion));
+        }
+        private void QuestionManager_QuestionsChanged(object sender, EventArgs e)
+        {
+            LoadQuestions();
         }
         QuestionControl CreateQuestionControl(Question quest)
         {
@@ -202,13 +206,57 @@ namespace EscapeRoom
             }
         }
 
-        private void QuestionManager_QuestionsChanged(object sender, EventArgs e)
+        // Game
+        /// <summary>
+        /// Creates and shows a game window without linking any automatic behaviors.
+        /// </summary>
+        /// <param name="question"></param>
+        void TestQuestion(Question question)
         {
-            LoadQuestions();
+            var gameWindow = CreateGame(question);
         }
-        #endregion
+        GameWindow CreateGame(Question question)
+        {
+            GameWindow window = new GameWindow(question);
+            window.Show(); window.Activate();
 
-        #region Question control click events
+            return window;
+        }
+        /// <summary>
+        /// Creates a game window that will cycle through the questions in an automatic fashion.
+        /// </summary>
+        /// <param name="question"></param>
+        GameWindow CreateGameAuto(List<Question> questList)
+        {
+            GameWindow window = new GameWindow(questList);
+            window.Show(); window.Activate();
+
+            return window;
+        }
+        void LaunchAuto()
+        {
+            List<Question> questList = QuestionManager.GetQuestsFromJSON();
+            GameWindow gameWindow_Auto = CreateGameAuto(questList);
+
+            // hook up events
+            gameWindow_Auto.OnLoading += GameWindow_Auto_OnLoading;
+            gameWindow_Auto.OnSuccess += GameWindow_Auto_OnSuccess;
+            gameWindow_Auto.OnFailure += GameWindow_Auto_OnFailure;
+        }
+        private void GameWindow_Auto_OnLoading(object sender, Question e)
+        {
+
+        }
+        private void GameWindow_Auto_OnSuccess(object sender, Question e)
+        {
+
+        }
+        private void GameWindow_Auto_OnFailure(object sender, Question e)
+        {
+
+        }
+
+        #region Button events
         private async void newButton_Click(object sender, RoutedEventArgs e)
         {
             if (!Keyboard.IsKeyDown(Key.LeftShift))
@@ -317,6 +365,14 @@ namespace EscapeRoom
         {
             LaunchAuto();
         }
+        private async void settingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            ContentDialog dialog = new ContentDialog() { Title = "Settings", PrimaryButtonText = "Accept" };
+            dialog.Content = new SettingsDialogContent();
+
+            await contentDialogHost.ShowDialogAsync(dialog);
+            LoadConfiguration();
+        }
         #endregion
 
         #region Theming engine
@@ -381,15 +437,7 @@ namespace EscapeRoom
         }
         #endregion
 
-        #region Window events
-        private async void settingsButton_Click(object sender, RoutedEventArgs e)
-        {
-            ContentDialog dialog = new ContentDialog() { Title = "Settings", PrimaryButtonText = "Accept" };
-            dialog.Content = new SettingsDialogContent();
-
-            await contentDialogHost.ShowDialogAsync(dialog);
-            LoadConfiguration();
-        }
+        // Window events
         private async void Window_PreviewKeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
 #if DEBUG
@@ -475,59 +523,6 @@ namespace EscapeRoom
             // Close the game window(s) we create.
             Application.Current.Shutdown();
         }
-        #endregion
-
-        #region Game window
-        /// <summary>
-        /// Creates and shows a game window without linking any automatic behaviors.
-        /// </summary>
-        /// <param name="question"></param>
-        void TestQuestion(Question question)
-        {
-            var gameWindow = CreateGame(question);
-        }
-        GameWindow CreateGame(Question question)
-        {
-            GameWindow window = new GameWindow(question);
-            window.Show(); window.Activate();
-
-            return window;
-        }
-        /// <summary>
-        /// Creates a game window that will cycle through the questions in an automatic fashion.
-        /// </summary>
-        /// <param name="question"></param>
-        GameWindow CreateGameAuto(List<Question> questList)
-        {
-            GameWindow window = new GameWindow(questList);
-            window.Show(); window.Activate();
-
-            return window;
-        }
-
-        void LaunchAuto()
-        {
-            List<Question> questList = QuestionManager.GetQuestsFromJSON();
-            GameWindow gameWindow_Auto = CreateGameAuto(questList);
-
-            // hook up events
-            gameWindow_Auto.OnLoading += GameWindow_Auto_OnLoading;
-            gameWindow_Auto.OnSuccess += GameWindow_Auto_OnSuccess;
-            gameWindow_Auto.OnFailure += GameWindow_Auto_OnFailure;
-        }
-        private void GameWindow_Auto_OnLoading(object sender, Question e)
-        {
-
-        }
-        private void GameWindow_Auto_OnSuccess(object sender, Question e)
-        {
-
-        }
-        private void GameWindow_Auto_OnFailure(object sender, Question e)
-        {
-
-        }
-        #endregion
         
         #region Debug
         public bool DebugFeatures

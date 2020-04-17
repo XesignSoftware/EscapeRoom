@@ -91,17 +91,15 @@ namespace EscapeRoom.Dialogs
             MainWindow.CheckThemeChanges();
         }
 
-        #region Dialog content handling
+        // Dialog content handling
         private void ThemeToggleButton_IsActiveChanged(object sender, EventArgs e)
         {
             ValidateThemeChanges();
         }
-
         private void accent_Click(object sender, EventArgs e)
         {
             ValidateAccentChanges();
         }
-
         private void debugFeaturesCheckbox_IsActiveChanged(object sender, EventArgs e)
         {
             Config.DebugFeatures = debugFeaturesCheckbox.IsActive;
@@ -112,6 +110,5 @@ namespace EscapeRoom.Dialogs
         {
             ConfigurationManager.ResetConfiguration();
         }
-        #endregion
     }
 }

@@ -17,7 +17,7 @@ namespace EscapeRoom.Configuration
 
         }
 
-        #region JSON Read & get
+        // JSON Read & get
         public string GetPathForJSON(string file)
         {
             string configDir = AppDomain.CurrentDomain.BaseDirectory + @"Configuration\";
@@ -36,7 +36,6 @@ namespace EscapeRoom.Configuration
         {
             return File.ReadAllText(GetPathForJSON(ConfigJSON));
         }
-        #endregion
 
         void CreateConfigFile(string path, EscapeRoomConfig config)
         {

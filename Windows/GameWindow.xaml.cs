@@ -120,6 +120,10 @@ namespace EscapeRoom.Windows
             Animation.FadeIn(input_TextField);
             Animation.FadeIn(input_choicesGrid);
         }
+        void GameWindow_OnLoading(object sender, Question e)
+        {
+            LoadQuestion(e);
+        }
 
         #region Public properties
         public Question Question { get; set; }
@@ -151,7 +155,6 @@ namespace EscapeRoom.Windows
 
         public string QuestionSolutionMediaPath { get; set; }
         #endregion
-
         #region Animations
         Storyboard playGrid_ShakeAnim;
 
@@ -186,14 +189,11 @@ namespace EscapeRoom.Windows
                 board.SetSpeedRatio(0.1);
         }
         #endregion
-
         #region Exceptions
         Exception EX_NULLQUEST = new Exception("The passed question is null.");
         Exception EX_UIRESULT_TODO = new Exception("UI results are not yet implemented!");
         Exception EX_INIT_AMBIGIOUS = new Exception("[init] Both a Question and a List<Question> were passed!");
         #endregion
-
-        #region Media handling
 
         async void UpdateMedia()
         {
@@ -217,7 +217,6 @@ namespace EscapeRoom.Windows
                 await Animation.FadeOutAsync(progress);
             }
         }
-
         async Task<UIElement> CreateMedia(string mediaPath)
         {
             if (mediaPath == null || mediaPath == "")
@@ -227,82 +226,80 @@ namespace EscapeRoom.Windows
             {
                 case ".jpg":
                 case ".png":
+                {
+                    BitmapImage image = new BitmapImage();
+                    byte[] bytes = null;
+
+                    try
                     {
-                        BitmapImage image = new BitmapImage();
-                        byte[] bytes = null;
-
-                        try
+                        using (FileStream stream = new FileStream(mediaPath, FileMode.Open, FileAccess.Read))
                         {
-                            using (FileStream stream = new FileStream(mediaPath, FileMode.Open, FileAccess.Read))
-                            {
-                                bytes = new byte[stream.Length];
-                                await stream.ReadAsync(bytes, 0, (int)stream.Length);
-                            }
-
-                            if (bytes.Length != 0)
-                            {
-                                image.BeginInit();
-                                image.CacheOption = BitmapCacheOption.None;
-                                image.StreamSource = new MemoryStream(bytes);
-                                image.EndInit();
-                            }
-                            else
-                                throw new Exception("The image is null.");
-                        }
-                        catch (Exception ex)
-                        {
-                            ThrowException(ex);
-                            return null;
+                            bytes = new byte[stream.Length];
+                            await stream.ReadAsync(bytes, 0, (int)stream.Length);
                         }
 
-                        return new Image() { Source = image, Stretch = Stretch.UniformToFill };
+                        if (bytes.Length != 0)
+                        {
+                            image.BeginInit();
+                            image.CacheOption = BitmapCacheOption.None;
+                            image.StreamSource = new MemoryStream(bytes);
+                            image.EndInit();
+                        }
+                        else
+                            throw new Exception("The image is null.");
                     }
+                    catch (Exception ex)
+                    {
+                        ThrowException(ex);
+                        return null;
+                    }
+
+                    return new Image() { Source = image, Stretch = Stretch.UniformToFill };
+                }
                 default:
-                    return null;
+                return null;
             }
         }
 
-        #endregion
-
-        #region Input & choices handling
+        // Input & choices handling
         void PrepareQuestInput()
         {
             switch (Question.QuestionInputType)
             {
                 case Question.QuestInputType.Input:
-                    {
-                        input_TextField.Visibility = Visibility.Visible;
-                        input_choicesGrid.Visibility = Visibility.Collapsed;
+                {
+                    input_TextField.Visibility = Visibility.Visible;
+                    input_choicesGrid.Visibility = Visibility.Collapsed;
 
-                        QuestionInputSolution = Question.QuestionInputSolution;
-                        break;
-                    }
+                    QuestionInputSolution = Question.QuestionInputSolution;
+                    break;
+                }
                 case Question.QuestInputType.Choices:
+                {
+                    input_TextField.Visibility = Visibility.Collapsed;
+                    input_choicesStackPanel.Visibility = Visibility.Visible;
+
+                    // clear choice buttons
+                    input_choicesStackPanel.Children.Clear();
+
+                    // create choice buttons
+                    foreach (string choice in Question.QuestionChoices)
                     {
-                        input_TextField.Visibility = Visibility.Collapsed;
-                        input_choicesStackPanel.Visibility = Visibility.Visible;
-
-                        // clear choice buttons
-                        input_choicesStackPanel.Children.Clear();
-
-                        // create choice buttons
-                        foreach (string choice in Question.QuestionChoices)
+                        string finalChoice = Regex.Replace(choice, @"\t|\n|\r", "");
+                        if (choice.StartsWith("*"))
                         {
-                            string finalChoice = Regex.Replace(choice, @"\t|\n|\r", "");
-                            if (choice.StartsWith("*"))
-                            {
-                                finalChoice = finalChoice.Substring(1);
-                                input_choicesStackPanel.Children.Add(CreateChoiceButton(finalChoice, true));
+                            finalChoice = finalChoice.Substring(1);
+                            input_choicesStackPanel.Children.Add(CreateChoiceButton(finalChoice, true));
 
-                                // set global solution string
-                                QuestionInputSolution = finalChoice;
-                            }
-                            else
-                                input_choicesStackPanel.Children.Add(CreateChoiceButton(finalChoice));
+                            // set global solution string
+                            QuestionInputSolution = finalChoice;
                         }
-
-                        break;
+                        else
+                            input_choicesStackPanel.Children.Add(CreateChoiceButton(finalChoice));
                     }
+
+                    break;
+                }
             }
         }
         public event RoutedEventHandler ChoiceClicked;
@@ -327,7 +324,6 @@ namespace EscapeRoom.Windows
             else
                 await Failure();
         }
-
         private async void input_TextField_PreviewKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -338,9 +334,8 @@ namespace EscapeRoom.Windows
                     await Failure();
             }
         }
-        #endregion
 
-        #region Result handling
+        // Result handling
         public enum ResultEvent { Success, Failure, Forwards, Dismiss }
 
         /// <summary>
@@ -352,43 +347,43 @@ namespace EscapeRoom.Windows
             switch (@event)
             {
                 case ResultEvent.Success:
-                    PlayStoryboard(result_In); break;
+                PlayStoryboard(result_In); break;
                 case ResultEvent.Forwards:
                 case ResultEvent.Dismiss:
-                    PlayStoryboard(result_Out); break;
+                PlayStoryboard(result_Out); break;
             }
 
             switch (@event)
             {
                 case ResultEvent.Success:
+                {
+                    switch (Question.QuestionSuccessType)
                     {
-                        switch (Question.QuestionSuccessType)
-                        {
-                            case Question.QuestSuccessType.ImageText:
-                                PlayStoryboard(result_Success_Img_In);
-                                succ_img_Image = (Image)await CreateMedia(QuestionSolutionMediaPath); // create solution media
+                        case Question.QuestSuccessType.ImageText:
+                        PlayStoryboard(result_Success_Img_In);
+                        succ_img_Image = (Image)await CreateMedia(QuestionSolutionMediaPath); // create solution media
 
-                                break;
-                            case Question.QuestSuccessType.UI:
-                                throw EX_UIRESULT_TODO;
-                        }
                         break;
+                        case Question.QuestSuccessType.UI:
+                        throw EX_UIRESULT_TODO;
                     }
-                case ResultEvent.Failure:
-                    {
-                        switch (Question.QuestionFailureType)
-                        {
-                            case Question.QuestFailureType.ShakePlayGrid:
-                                PlayStoryboard(playGrid_ShakeAnim); break;
-                            case Question.QuestFailureType.UI:
-                                PlayStoryboard(result_In); throw EX_UIRESULT_TODO;
-                        }
-                        break;
-                    }
-                case ResultEvent.Forwards:
-                    if (Question.QuestionSuccessType == Question.QuestSuccessType.ImageText)
-                        PlayStoryboard(result_Success_Img_Out);
                     break;
+                }
+                case ResultEvent.Failure:
+                {
+                    switch (Question.QuestionFailureType)
+                    {
+                        case Question.QuestFailureType.ShakePlayGrid:
+                        PlayStoryboard(playGrid_ShakeAnim); break;
+                        case Question.QuestFailureType.UI:
+                        PlayStoryboard(result_In); throw EX_UIRESULT_TODO;
+                    }
+                    break;
+                }
+                case ResultEvent.Forwards:
+                if (Question.QuestionSuccessType == Question.QuestSuccessType.ImageText)
+                    PlayStoryboard(result_Success_Img_Out);
+                break;
             }
         }
 
@@ -407,7 +402,6 @@ namespace EscapeRoom.Windows
             get { if (!_failureTime.HasValue) return SuccessTime; else return _failureTime.Value; }
             set { _failureTime = value; }
         }
-
         public async Task Success()
         {
             HandleResultView(ResultEvent.Success);
@@ -422,7 +416,6 @@ namespace EscapeRoom.Windows
             await Task.Delay(SuccessTime);
             Forwards();
         }
-
         public async Task Failure()
         {
             HandleResultView(ResultEvent.Failure);
@@ -440,7 +433,6 @@ namespace EscapeRoom.Windows
             // TODO: Display media on failure?
             //Forwards();
         }
-
         public void Forwards()
         {
             input_TextField.Clear();
@@ -462,9 +454,7 @@ namespace EscapeRoom.Windows
             }
         }
 
-        #endregion
-
-        #region Automatic gamemode
+        // Automatic gamemode
         int auto_counter = 0;
         void Auto(List<Question> questList = null)
         {
@@ -507,7 +497,6 @@ namespace EscapeRoom.Windows
         {
             get { if (QuestionList == null) return false; else return true; }
         }
-
         public void Ending()
         {
             OnEnding?.Invoke(null, null);
@@ -518,34 +507,21 @@ namespace EscapeRoom.Windows
 
             SetTitlebarColor("Success");
         }
-
         public void UnFinish()
         {
             Animation.FadeOut(endingGrid);
 
             SetTitlebarColor("Accent");
         }
-
         void Invoke_Loading(Question quest)
         {
             OnLoading?.Invoke(null, quest);
         }
-
         void Invoke_Loading(int questID)
         {
             Question quest = QuestionList[questID];
             Invoke_Loading(quest);
         }
-
-        /// <summary>
-        /// Get to the next question
-        /// </summary>
-
-        private void GameWindow_OnLoading(object sender, Question e)
-        {
-            LoadQuestion(e);
-        }
-        #endregion
 
         #region Debug
         bool _debugFeatures;

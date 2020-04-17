@@ -100,9 +100,7 @@ namespace EscapeRoom.Dialogs
             };
         }
 
-        #region Question properties
-        
-
+        // Question properties
         /// <summary>
         /// Returns the appropriate RadioButton for the QuestionType
         /// </summary>
@@ -111,12 +109,12 @@ namespace EscapeRoom.Dialogs
             switch (type)
             {
                 case Question.QuestType.TextQuestion:
-                    return "Text";
+                return "Text";
                 case Question.QuestType.ImageQuestion:
-                    return "Image";
+                return "Image";
 
                 default:
-                    throw new Exception("Invalid question type!");
+                throw new Exception("Invalid question type!");
             }
         }
         QuestType QuestVariantFromTag(string tag)
@@ -124,17 +122,16 @@ namespace EscapeRoom.Dialogs
             switch (tag)
             {
                 case "Text":
-                    return Question.QuestType.TextQuestion;
+                return Question.QuestType.TextQuestion;
                 case "Image":
-                    return Question.QuestType.ImageQuestion;
+                return Question.QuestType.ImageQuestion;
 
                 default:
-                    return Question.QuestType.TextQuestion;
+                return Question.QuestType.TextQuestion;
             }
         }
-        #endregion
 
-        #region Dialog content functions
+        // Dialog content functions
         /// <summary>
         /// Gets the user-customized new quest varaint to build the new Question with.
         /// </summary>
@@ -147,12 +144,12 @@ namespace EscapeRoom.Dialogs
                     switch (button.Tag)
                     {
                         case "Text":
-                            return Question.QuestType.TextQuestion;
+                        return Question.QuestType.TextQuestion;
                         case "Image":
-                            return Question.QuestType.ImageQuestion;
+                        return Question.QuestType.ImageQuestion;
 
                         default:
-                            throw new Exception("Invalid question type RadioButton Tag!");
+                        throw new Exception("Invalid question type RadioButton Tag!");
                     }
                 }
             }
@@ -168,12 +165,12 @@ namespace EscapeRoom.Dialogs
                     switch (button.Tag)
                     {
                         default:
-                            return QuestInputType.Input;
+                        return QuestInputType.Input;
 
                         case "Input":
-                            return QuestInputType.Input;
+                        return QuestInputType.Input;
                         case "Choices":
-                            return QuestInputType.Choices;
+                        return QuestInputType.Choices;
                     }
                 }
             }
@@ -186,17 +183,17 @@ namespace EscapeRoom.Dialogs
             {
                 case ".jpg":
                 case ".png":
-                    {
-                        BitmapImage bitmap = new BitmapImage();
-                        bitmap.BeginInit();
-                        bitmap.UriSource = new Uri(mediaPath);
-                        bitmap.DecodePixelWidth = 250;
-                        bitmap.EndInit();
+                {
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(mediaPath);
+                    bitmap.DecodePixelWidth = 250;
+                    bitmap.EndInit();
 
-                        return new Image() { Source = bitmap, Stretch = Stretch.UniformToFill, Margin = new Thickness(0, 8, 0, 8) };
-                    }
+                    return new Image() { Source = bitmap, Stretch = Stretch.UniformToFill, Margin = new Thickness(0, 8, 0, 8) };
+                }
                 default:
-                    return null;
+                return null;
             }
         }
 
@@ -248,19 +245,19 @@ namespace EscapeRoom.Dialogs
             switch (_question.QuestionInputType)
             {
                 case QuestInputType.Input:
-                    {
-                        modify_inputTextField.Visibility = Visibility.Visible;
-                        modify_choicesGrid.Visibility = Visibility.Collapsed;
-                        modify_inputRadioButton.ActivateButton();
-                        break;
-                    }
+                {
+                    modify_inputTextField.Visibility = Visibility.Visible;
+                    modify_choicesGrid.Visibility = Visibility.Collapsed;
+                    modify_inputRadioButton.ActivateButton();
+                    break;
+                }
                 case QuestInputType.Choices:
-                    {
-                        modify_inputTextField.Visibility = Visibility.Collapsed;
-                        modify_choicesGrid.Visibility = Visibility.Visible;
-                        modify_choicesRadioButton.ActivateButton();
-                        break;
-                    }
+                {
+                    modify_inputTextField.Visibility = Visibility.Collapsed;
+                    modify_choicesGrid.Visibility = Visibility.Visible;
+                    modify_choicesRadioButton.ActivateButton();
+                    break;
+                }
             }
 
             UpdateQuestionChoices();
@@ -294,9 +291,8 @@ namespace EscapeRoom.Dialogs
                            StringSplitOptions.RemoveEmptyEntries));
             }
         }
-        #endregion
 
-        #region Dialog content handling
+        // Dialog content handling
         // Top buttons
         private void tryButton_Click(object sender, RoutedEventArgs e)
         {
@@ -326,12 +322,14 @@ namespace EscapeRoom.Dialogs
         }
 
         // Question Media
+        #region OpenFileDialog openfileDialog ...
         public OpenFileDialog openfileDialog = new OpenFileDialog()
         {
             Title = "Browse for media...",
             Filter = "JPG image (*.jpg)|*.jpg|PNG image (*.png)|*.png|All files (*.*)|*.*",
             DefaultExt = "jpg",
         };
+        #endregion
         private async void media_pathTextField_TextChanged(object sender, TextChangedEventArgs e)
         {
             string originalText = media_pathTextField.Text;
@@ -364,9 +362,9 @@ namespace EscapeRoom.Dialogs
             switch (button.Tag)
             {
                 case "Input":
-                    _question.QuestionInputType = QuestInputType.Input; break;
+                _question.QuestionInputType = QuestInputType.Input; break;
                 case "Choices":
-                    _question.QuestionInputType = QuestInputType.Choices; break;
+                _question.QuestionInputType = QuestInputType.Choices; break;
             }
 
             UpdateQuestionInputType();
@@ -419,6 +417,5 @@ namespace EscapeRoom.Dialogs
                 advanced_ChevronButton.Icon = "\ue70d";
             }
         }
-        #endregion
     }
 }

@@ -81,7 +81,7 @@ namespace EscapeRoom
         public event EventHandler DeleteClick;
         public event EventHandler<string> OrderingClick;
 
-        #region Control content handling
+        // Control content handling
         void DisableColDef(ColumnDefinition coldef)
         {
             GridLength nullGridLength = new GridLength(0, GridUnitType.Pixel);
@@ -97,23 +97,19 @@ namespace EscapeRoom
         {
             Click?.Invoke(Question, null);
         }
-
         private void deleteButton_Click(object sender, RoutedEventArgs e)
         {
             DeleteClick?.Invoke(Question, null);
         }
-
         private void playButton_Click(object sender, RoutedEventArgs e)
         {
             PlayClick?.Invoke(Question, null);
         }
-
         private void orderingButton_Click(object sender, RoutedEventArgs e)
         {
             var button = (AppBarButton)sender;
 
             OrderingClick?.Invoke(this, (string)button.Tag);
         }
-        #endregion
     }
 }

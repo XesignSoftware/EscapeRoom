@@ -70,7 +70,6 @@ namespace EscapeRoom.Dialogs
             };
         }
 
-        #region Dialog content functions
         UIElement CreateMedia(string mediaPath)
         {
             switch (QuestionManager.GetFileExtension(mediaPath))
@@ -109,9 +108,8 @@ namespace EscapeRoom.Dialogs
                     mediaContainer.Children.Add(elementToAdd);
             }
         }
-        #endregion
 
-        #region Dialog content handling
+        // Dialog content handling
         public OpenFileDialog openfileDialog = new OpenFileDialog()
         {
             Title = "Browse for media...",
@@ -141,6 +139,5 @@ namespace EscapeRoom.Dialogs
 
             media_pathTextField.Text = openfileDialog.FileName;
         }
-        #endregion
     }
 }

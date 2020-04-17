@@ -20,7 +20,7 @@ namespace EscapeRoom.QuestionHandling
         public event EventHandler RemoveFailed;
         public event EventHandler ModifyFailed;
 
-        #region JSON Read & get
+        // JSON Read & get
         public string GetPathForJSON(string file)
         {
             string configDir = AppDomain.CurrentDomain.BaseDirectory + @"Configuration\";
@@ -39,10 +39,8 @@ namespace EscapeRoom.QuestionHandling
         {
             return File.ReadAllText(GetPathForJSON(QuestsJSON));
         }
-        
-        #endregion
 
-        #region Question functions
+        // Question functions
         public List<Question> GetQuestsFromJSON()
         {
             string file = File.ReadAllText(GetPathForJSON(QuestsJSON));
@@ -232,9 +230,8 @@ namespace EscapeRoom.QuestionHandling
 
             AddQuestion(newQuestion, invokeEvent);
         }
-        #endregion
 
-        #region JSON functions
+        // JSON functions
         public void ClearQuestionList()
         {
             SerializeQuestsJSON(new List<Question>());
@@ -256,7 +253,6 @@ namespace EscapeRoom.QuestionHandling
                 ser.Serialize(file, new List<Question>());
             }
         }
-        #endregion
 
         public bool IsValidMediaFile(string mediaPath)
         {
