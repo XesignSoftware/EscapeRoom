@@ -144,8 +144,17 @@ namespace EscapeRoom.QuestionHandling
         }
         public void OrderQuestion(int oldID, int newID)
         {
-            List<Question> list = GetQuestsFromJSON();
+            List<Question> oglist = GetQuestsFromJSON(); // un-sorted list
+            List<Question> list = new List<Question>(); // sorted list
+            List<int> questIDList = new List<int>();
 
+            // sort by QuestIDs
+            foreach (Question q in oglist) // get quest IDs
+                questIDList.Add(q.QuestID.Value);
+            foreach (int id in questIDList) // add to sorted list based on quest IDs
+                list.Add(oglist[id]);
+
+            // replace shenanigans
             var quest = list[oldID];
             var tbreplacedQuest = list[newID];
 
