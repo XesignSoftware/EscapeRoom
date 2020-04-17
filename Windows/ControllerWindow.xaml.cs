@@ -184,6 +184,59 @@ namespace EscapeRoom
             }
         }
 
+        // Game ending configuration
+        async Task CallEndingEditDialog(GameEnding ending, UIElement comingfromPrev = null)
+        {
+            ContentDialog dialog = new ContentDialog()
+            {
+                Title = "Játék vége módosítása",
+                PrimaryButtonText = "Mentés",
+                SecondaryButtonText = "Mégse",
+                IsDismissableByTouchBlocker = false
+            };
+
+#if DEBUG
+            dialog.IsDismissableByTouchBlocker = true;
+#endif
+
+            UIElement dialogContent;
+
+            if (comingfromPrev != null)
+                dialogContent = comingfromPrev;
+            else
+                dialogContent = new MetaEditDialogContent(ending);
+
+            dialog.Content = dialogContent;
+
+            if (await contentDialogHost.ShowDialogAsync(dialog) == ContentDialogHost.ContentDialogResult.Primary)
+            {
+                GameEnding newEnding;
+
+                try
+                {
+                    var dialogContentForEditBuild = (MetaEditDialogContent)dialogContent;
+                    newEnding = dialogContentForEditBuild.Build();
+                }
+                catch (Exception ex)
+                {
+                    await contentDialogHost.TextContentDialogAsync("Could not save ending configuration!", ex.Message, true);
+
+                    // There was an error.
+                    // Re-call the exact same dialog that the user just witnessed.
+
+                    // detach the previous dialog's content so we can re-use it
+                    dialog.Content = null;
+
+                    // re-call the dialog with the same Content
+                    await CallEndingEditDialog(ending, dialogContent);
+                    return;
+                }
+
+                Config.Ending = newEnding;
+                ConfigurationManager.Save(Config);
+            }
+        }
+
         // Game
         /// <summary>
         /// Creates and shows a game window without linking any automatic behaviors.
@@ -350,6 +403,10 @@ namespace EscapeRoom
 
             await contentDialogHost.ShowDialogAsync(dialog);
             LoadConfiguration();
+        }
+        private async void configureEndingButton_Click(object sender, RoutedEventArgs e)
+        {
+            await CallEndingEditDialog(Config.Ending);
         }
 
         #region Theming engine
@@ -551,10 +608,5 @@ namespace EscapeRoom
             }
         }
         #endregion
-
-        private void configureEndingButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

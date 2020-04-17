@@ -1,4 +1,5 @@
-﻿using EscapeRoom.QuestionHandling;
+﻿using EscapeRoom.Configuration;
+using EscapeRoom.QuestionHandling;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using XeZrunner.UI.Controls;
 
 namespace EscapeRoom.Dialogs
 {
@@ -23,18 +25,18 @@ namespace EscapeRoom.Dialogs
     /// </summary>
     public partial class MetaEditDialogContent : UserControl
     {
-        QuestionManager QuestionManager = new QuestionManager();
-        Question _question;
+        ConfigurationManager ConfigurationManager = new ConfigurationManager();
+        GameEnding _ending;
 
         public MetaEditDialogContent()
         {
             InitializeComponent();
         }
-        public MetaEditDialogContent(Question quest)
+        public MetaEditDialogContent(GameEnding ending)
         {
             InitializeComponent();
 
-            _question = quest;
+            _ending = ending;
             LoadDialog();
         }
         private void main_Loaded(object sender, RoutedEventArgs e)
@@ -43,11 +45,12 @@ namespace EscapeRoom.Dialogs
         }
         void LoadDialog()
         {
-            media_pathTextField.Text = _question.QuestionMediaPath;
-            modify_endtextTextField.Text = _question.QuestionDescription;
+            SetDialogType(_ending.Type);
+            media_pathTextField.Text = _ending.MediaPath;
+            modify_endtextTextField.Text = _ending.EndingText;
             UpdateQuestionMedia();
         }
-        public Question BuildQuestion()
+        public GameEnding Build()
         {
             string finalMediaPath = "";
 
@@ -55,36 +58,34 @@ namespace EscapeRoom.Dialogs
             {
                 if (!File.Exists(media_pathTextField.Text))
                     throw new FileNotFoundException();
-                if (!QuestionManager.IsValidMediaFile(media_pathTextField.Text))
+                if (!ConfigurationManager.IsValidMediaFile(media_pathTextField.Text))
                     throw new Exception("Invalid media type! - currently supported: .jpg, .png");
                 finalMediaPath = media_pathTextField.Text;
             }
 
-            return new Question()
+            return new GameEnding()
             {
-                QuestID = _question.QuestID,
-                QuestionTitle = _question.QuestionTitle,
-                QuestionDescription = modify_endtextTextField.Text,
-                //QuestionType = Question.QuestType.MetaQuestion,
-                QuestionMediaPath = finalMediaPath, // return empty when not selected, but don't delete textfield entry
+                Type = DialogGameEndingType,
+                MediaPath = finalMediaPath, // return empty when not selected, but don't delete textfield entry
+                EndingText = modify_endtextTextField.Text
             };
         }
 
         UIElement CreateMedia(string mediaPath)
         {
-            switch (QuestionManager.GetFileExtension(mediaPath))
+            switch (ConfigurationManager.GetFileExtension(mediaPath))
             {
                 case ".jpg":
                 case ".png":
-                    {
-                        BitmapImage bitmap = new BitmapImage();
-                        bitmap.BeginInit();
-                        bitmap.UriSource = new Uri(mediaPath);
-                        bitmap.DecodePixelWidth = 250;
-                        bitmap.EndInit();
+                {
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(mediaPath);
+                    bitmap.DecodePixelWidth = 250;
+                    bitmap.EndInit();
 
-                        return new Image() { Source = bitmap, Stretch = Stretch.UniformToFill, Margin = new Thickness(0, 8, 0, 8) };
-                    }
+                    return new Image() { Source = bitmap, Stretch = Stretch.UniformToFill, Margin = new Thickness(0, 8, 0, 8) };
+                }
                 default:
                     return null;
             }
@@ -140,6 +141,43 @@ namespace EscapeRoom.Dialogs
                 return;
 
             media_pathTextField.Text = openfileDialog.FileName;
+        }
+
+        void SetDialogType(GameEnding.EndingType type)
+        {
+            foreach (XeZrunner.UI.Controls.RadioButton button in modify_typeStackPanel.Children)
+                if (type == StringToEndingType(button.Tag.ToString()))
+                    button.IsActive = true;
+        }
+
+        GameEnding.EndingType StringToEndingType(string str)
+        {
+            switch (str)
+            {
+                case "None":
+                    return GameEnding.EndingType.None;
+                case "ImageText":
+                    return GameEnding.EndingType.ImageText;
+                default:
+                    throw new Exception("StringToEndingType(): invalid string (\"" + str + "\")");
+            }
+        }
+
+        GameEnding.EndingType DialogGameEndingType;
+        private void TypeRadioButton_IsActiveChanged(object sender, EventArgs e)
+        {
+            var button = (FrameworkElement)sender;
+            switch (button.Tag)
+            {
+                case "None":
+                    DialogGameEndingType = GameEnding.EndingType.None;
+                    modify_mediaStackPanel.Visibility = Visibility.Collapsed;
+                    break;
+                case "ImageText":
+                    DialogGameEndingType = GameEnding.EndingType.ImageText;
+                    modify_mediaStackPanel.Visibility = Visibility.Visible;
+                    break;
+            }
         }
     }
 }

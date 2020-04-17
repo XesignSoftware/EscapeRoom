@@ -8,9 +8,15 @@
 			 mc:Ignorable="d" 
 			 d:DesignWidth="800" Foreground="{DynamicResource Foreground}"
 			 Loaded="main_Loaded">
-	<Grid Margin="5">
+    <Grid Margin="5">
 
         <StackPanel>
+
+            <TextBlock Text="Ending type:" />
+            <StackPanel x:Name="modify_typeStackPanel" Margin="0,8">
+                <xezui_controls:RadioButton Text="None" IsActiveChanged="TypeRadioButton_IsActiveChanged" Tag="None" />
+                <xezui_controls:RadioButton Text="Image &amp; text" IsActiveChanged="TypeRadioButton_IsActiveChanged" Tag="ImageText" />
+            </StackPanel>
 
             <StackPanel x:Name="modify_mediaStackPanel">
                 <TextBlock Text="Game ending" />
@@ -29,6 +35,6 @@
             </StackPanel>
 
         </StackPanel>
-		
-	</Grid>
+
+    </Grid>
 </UserControl>

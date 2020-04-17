@@ -8,9 +8,9 @@ namespace EscapeRoom.Configuration
 {
     public class GameEnding
     {
-        public enum GameEndingType { None, ImageText }
-        public GameEndingType EndingType { get; set; } = GameEndingType.None;
-        public string Media { get; set; }
+        public enum EndingType { None, ImageText }
+        public EndingType Type { get; set; } = EndingType.None;
+        public string MediaPath { get; set; }
         public string EndingText { get; set; }
     }
 }
