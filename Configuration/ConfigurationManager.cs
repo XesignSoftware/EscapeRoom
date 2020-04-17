@@ -11,6 +11,7 @@ namespace EscapeRoom.Configuration
 {
     public class ConfigurationManager
     {
+        public MediaUtils MediaUtils = new MediaUtils();
         public string ConfigJSON = "EscapeRoom_Configuration.json";
         public ConfigurationManager()
         {
@@ -62,9 +63,19 @@ namespace EscapeRoom.Configuration
         {
             SerializeConfigJSON(new EscapeRoomConfig());
         }
-        public void SerializeConfigJSON(EscapeRoomConfig config)
+        void SerializeConfigJSON(EscapeRoomConfig config)
         {
             CreateConfigFile(GetPathForJSON(ConfigJSON), config);
+        }
+        public void Save(EscapeRoomConfig config) { SerializeConfigJSON(config); }
+
+        public bool IsValidMediaFile(string mediaPath)
+        {
+            return MediaUtils.IsValidMediaFile(mediaPath);
+        }
+        public string GetFileExtension(string filePath)
+        {
+            return MediaUtils.GetFileExtension(filePath);
         }
     }
 }

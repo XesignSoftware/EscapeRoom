@@ -68,6 +68,7 @@
     <Compile Include="Dialogs\SettingsDialogContent.xaml.cs">
       <DependentUpon>SettingsDialogContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils.cs" />
     <Compile Include="Version.cs" />
     <Compile Include="Windows\GameWindow.xaml.cs">
       <DependentUpon>GameWindow.xaml</DependentUpon>

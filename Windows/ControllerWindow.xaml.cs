@@ -356,7 +356,7 @@ namespace EscapeRoom
         public void SetTheme(ThemeManager.Theme theme)
         {
             Config.Theme = theme;
-            ConfigurationManager.SerializeConfigJSON(Config);
+            ConfigurationManager.Save(Config);
 
             CheckThemeChanges();
         }
@@ -387,7 +387,7 @@ namespace EscapeRoom
 
             if (!theme_unchanged || !accent_unchanged)
             {
-                //ConfigurationManager.SerializeConfigJSON(Config);
+                //ConfigurationManager.Save(Config);
 
                 // Screenshot!
                 themechangeImage.Source = Screenshot(this);
@@ -530,7 +530,7 @@ namespace EscapeRoom
                     this.Title = "EscapeRoom";
                 }
 
-                ConfigurationManager.SerializeConfigJSON(Config);
+                ConfigurationManager.Save(Config);
             }
         }
 

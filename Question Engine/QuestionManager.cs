@@ -11,6 +11,7 @@ namespace EscapeRoom.QuestionHandling
 {
     public class QuestionManager
     {
+        public MediaUtils MediaUtils = new MediaUtils();
         public string QuestsJSON = "EscapeRoom_Quests.json";
         public QuestionManager()
         {
@@ -250,18 +251,11 @@ namespace EscapeRoom.QuestionHandling
 
         public bool IsValidMediaFile(string mediaPath)
         {
-            switch (GetFileExtension(mediaPath))
-            {
-                case ".jpg":
-                case ".png":
-                return true;
-                default:
-                return false;
-            }
+            return MediaUtils.IsValidMediaFile(mediaPath);
         }
         public string GetFileExtension(string filePath)
         {
-            return filePath.Substring(filePath.Length - 4);
+            return MediaUtils.GetFileExtension(filePath);
         }
 
         /// <summary>

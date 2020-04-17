@@ -71,7 +71,7 @@ namespace EscapeRoom.Dialogs
 
             Config.Theme = themeToggleButton.IsActive ? XeZrunner.UI.Theming.ThemeManager.Theme.Dark : XeZrunner.UI.Theming.ThemeManager.Theme.Light;
 
-            ConfigurationManager.SerializeConfigJSON(Config);
+            ConfigurationManager.Save(Config);
             MainWindow.CheckThemeChanges();
         }
         void ValidateAccentChanges()
@@ -87,7 +87,7 @@ namespace EscapeRoom.Dialogs
                     Config.UserAccent = ThemeManager.GetAccentFromString(button.Text);
             }
 
-            ConfigurationManager.SerializeConfigJSON(Config);
+            ConfigurationManager.Save(Config);
             MainWindow.CheckThemeChanges();
         }
 
@@ -103,7 +103,7 @@ namespace EscapeRoom.Dialogs
         private void debugFeaturesCheckbox_IsActiveChanged(object sender, EventArgs e)
         {
             Config.DebugFeatures = debugFeaturesCheckbox.IsActive;
-            ConfigurationManager.SerializeConfigJSON(Config);
+            ConfigurationManager.Save(Config);
         }
 
         private void ResetConfig_Button_Click(object sender, RoutedEventArgs e)
