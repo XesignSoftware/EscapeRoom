@@ -66,6 +66,7 @@
 
                     <StackPanel Orientation="Horizontal" Grid.Row="1">
                         <xezui_buttons:CircularActionButton x:Name="newButton" Icon="&#xe109;" Text="Új kérdés" Click="newButton_Click" />
+                        <xezui_buttons:CircularActionButton x:Name="configureEndingButton" Icon="&#xe90f;" Text="Játék vége beállítások" Click="configureEndingButton_Click" />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">

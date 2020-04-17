@@ -61,6 +61,7 @@
     <Compile Include="Animation.cs" />
     <Compile Include="Configuration\EscapeRoomConfig.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
+    <Compile Include="Configuration\GameEnding.cs" />
     <Compile Include="Dialogs\MetaEditDialogContent.xaml.cs">
       <DependentUpon>MetaEditDialogContent.xaml</DependentUpon>
     </Compile>

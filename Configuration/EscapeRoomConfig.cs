@@ -62,5 +62,8 @@ namespace EscapeRoom.Configuration
         }
         public ThemeManager.Accent Accent_Dark { get; set; } = ThemeManager.Accent.Pink;
         public ThemeManager.Accent Accent_Light { get; set; } = ThemeManager.Accent.Blue;
+
+        // Game ending
+        public GameEnding Ending { get; set; } = new GameEnding();
     }
 }

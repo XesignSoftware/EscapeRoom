@@ -551,5 +551,10 @@ namespace EscapeRoom
             }
         }
         #endregion
+
+        private void configureEndingButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
