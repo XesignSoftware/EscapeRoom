@@ -200,9 +200,9 @@ namespace EscapeRoom.Dialogs
         /// <summary>
         /// Sets the QuestionType RadioButtons in the dialog
         /// </summary>
-        void SetDialogQuestVariant(Question.QuestType questVariant, bool update = false)
+        void SetDialogQuestVariant(Question.QuestType questVariant, bool activateButton = true)
         {
-            if (!update)
+            if (activateButton)
             {
                 foreach (XeZrunner.UI.Controls.RadioButton button in modify_TypeRadioButtonStackPanel.Children)
                 {
@@ -318,7 +318,7 @@ namespace EscapeRoom.Dialogs
             var button = (XeZrunner.UI.Controls.RadioButton)sender;
             string buttonTag = (string)button.Tag;
 
-            SetDialogQuestVariant(QuestVariantFromTag(buttonTag), true);
+            SetDialogQuestVariant(QuestVariantFromTag(buttonTag), false);
         }
 
         // Question Media
