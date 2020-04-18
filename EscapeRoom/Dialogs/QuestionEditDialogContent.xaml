@@ -88,8 +88,8 @@
                     <TextBlock Text="On incorrect answer:" />
 
 					<StackPanel x:Name="failureTypeStackPanel">
-						<xezui_controls:RadioButton Text="Shake the screen elements" Tag="ShakePlayGrid" />
-						<xezui_controls:RadioButton Text="Show a red cross symbol" Tag="UI" />
+                        <xezui_controls:RadioButton Text="Shake the screen elements" Tag="ShakePlayGrid" IsActiveChanged="FailureRadioButton_IsActiveChanged" />
+                        <xezui_controls:RadioButton Text="Show a red cross symbol" Tag="UI" IsActiveChanged="FailureRadioButton_IsActiveChanged" />
 					</StackPanel>
 
 					<buttons:CheckBoxButton x:Name="skipOnFailureCheckbox" Icon="" Title="Skip question on incorrect failure" Description="" Alignment="Left" />

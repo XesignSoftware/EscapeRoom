@@ -66,7 +66,7 @@ namespace EscapeRoom.Dialogs
             success_TextTextField.Text = _question.QuestionSuccessText;
 
             // failure
-
+            SetDialogFailureType(_question.QuestionFailureType);
             skipOnFailureCheckbox.IsActive = _question.SkipOnFailure;
         }
         public Question BuildQuestion()
@@ -117,6 +117,7 @@ namespace EscapeRoom.Dialogs
                 QuestionSuccessMediaPath = success_finalMediaPath,
                 QuestionSuccessText = success_TextTextField.Text,
 
+                QuestionFailureType = DialogFailureType,
                 SkipOnFailure = skipOnFailureCheckbox.IsActive
             };
         }
@@ -458,6 +459,7 @@ namespace EscapeRoom.Dialogs
             }
         }
 
+        // Success
         Question.QuestSuccessType DialogSuccessType;
         Question.QuestSuccessType StringToSuccessType(string str)
         {
@@ -530,6 +532,47 @@ namespace EscapeRoom.Dialogs
                 return;
 
             success_mediapathTextField.Text = openfileDialog.FileName;
+        }
+
+        // Failure
+        Question.QuestFailureType DialogFailureType;
+        Question.QuestFailureType StringToFailureType(string str)
+        {
+            switch (str)
+            {
+                case "ShakePlayGrid":
+                    return QuestFailureType.ShakePlayGrid;
+                case "UI":
+                    return QuestFailureType.UI;
+                default:
+                    throw new Exception("FailureTypeFromString(): invalid string (\"" + str + "\")");
+            }
+        }
+        void SetDialogFailureType(QuestFailureType type, bool activateButton = true)
+        {
+            if (activateButton)
+            {
+                foreach (XeZrunner.UI.Controls.RadioButton button in failureTypeStackPanel.Children)
+                {
+                    string buttonTag = (string)button.Tag;
+
+                    if (type == StringToFailureType(buttonTag))
+                        button.IsActive = true;
+                }
+            }
+
+            switch (type)
+            {
+                case QuestFailureType.ShakePlayGrid:
+                case QuestFailureType.UI:
+                    break;
+            }
+        }
+        private void FailureRadioButton_IsActiveChanged(object sender, EventArgs e)
+        {
+            var button = (FrameworkElement)sender;
+            DialogFailureType = StringToFailureType(button.Tag.ToString());
+            SetDialogFailureType(DialogFailureType, false);
         }
     }
 }
