@@ -9,6 +9,7 @@
                 <ResourceDictionary Source="pack://application:,,,/XeZrunner.UI;component/Theming/Themes.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/XeZrunner.UI;component/Theming/Accents.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/XeZrunner.UI;component/Theming/Global.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/EscapeRoom.Localization;component/Localization_EN.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

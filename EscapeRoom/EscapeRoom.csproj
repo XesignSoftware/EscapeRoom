@@ -169,6 +169,10 @@
       <Project>{d04773cb-bfb2-4dc9-ae70-da99c2b38da5}</Project>
       <Name>XeZrunner.UI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\EscapeRoom.Localization\EscapeRoom.Localization.csproj">
+      <Project>{0ed8bfd3-a706-4a7b-9eaf-0f163083edd1}</Project>
+      <Name>EscapeRoom.Localization</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

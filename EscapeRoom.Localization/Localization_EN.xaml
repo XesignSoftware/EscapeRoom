@@ -1,0 +1,103 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- _formatted: this string will be formatted by the application. -->
+    <!--FORMATTING GLOSSARY
+        *text*: bold with red color
+        ~text~: bold with accent color
+        _text_: regular with accent color
+    -->
+
+    <!-- 
+    <sys:String x:Key="
+    -->
+
+    <sys:String x:Key="AppTitle">Escape Room</sys:String>
+
+    <sys:String x:Key="Splash_AppTitle_Part1">Escape</sys:String>
+    <sys:String x:Key="Splash_AppTitle_Part2">Room</sys:String>
+    <sys:String x:Key="Splash_Branding">Powered by XesignSoftware UI</sys:String>
+    <sys:String x:Key="Splash_Error">Error</sys:String>
+
+    <sys:String x:Key="Version_lowercase">version</sys:String>
+    <sys:String x:Key="Version_uppercase">Version</sys:String>
+    <sys:String x:Key="Version_AuthorCredit">EscapeRoom by xezrunner</sys:String>
+
+    <sys:String x:Key="Warning">Warning</sys:String>
+    <sys:String x:Key="Upwards">Upwards</sys:String>
+    <sys:String x:Key="Downwards">Downwards</sys:String>
+    <sys:String x:Key="Save">Save</sys:String>
+    <sys:String x:Key="Saving...">Saving...</sys:String>
+    <sys:String x:Key="Cancel">Cancel</sys:String>
+    <sys:String x:Key="Modify">Modify</sys:String>
+    <!-- Delete and Remove strings can be the same -->
+    <sys:String x:Key="Delete">Delete</sys:String>
+    <sys:String x:Key="Remove">Remove</sys:String>
+    <sys:String x:Key="Deleting...">Deleting...</sys:String>
+    <sys:String x:Key="Removing...">Removing...</sys:String>
+
+    <sys:String x:Key="UnhandledException_Title">An error has occured!</sys:String>
+    <sys:String x:Key="UnhandledException_Ignore">Continue anyway</sys:String>
+    <sys:String x:Key="UnhandledException_Crash">Crash application</sys:String>
+
+    <!-- Question control -->
+    <sys:String x:Key="QuestionControl_Title">Title</sys:String>
+    <sys:String x:Key="QuestionControl_Description">Description</sys:String>
+    <sys:String x:Key="QuestionControl_Type">Type</sys:String>
+
+    <!-- Controller -->
+    <sys:String x:Key="Controller_QuestionList">Questions:</sys:String>
+    <sys:String x:Key="Controller_Settings">Settings</sys:String>
+
+    <sys:String x:Key="Controller_NewQuestion">New question</sys:String>
+    <sys:String x:Key="Controller_DuplicateLast">Duplicate last question</sys:String>
+    <sys:String x:Key="Controller_NoDupeLeft">No question left to delete!</sys:String>
+    <!-- game settings? -->
+    <sys:String x:Key="Controller_MetaSettings">Game configuration</sys:String>
+    <sys:String x:Key="Controller_TestID">Test ID</sys:String>
+    <sys:String x:Key="Controller_StartGame">Start game</sys:String>
+    <sys:String x:Key="Controller_ShiftDelete_formatted">Items are deleted *immediately* while holding _Shift_!</sys:String>
+
+    <sys:String x:Key="Controller_QuickTips1_Title">How to create a question?</sys:String>
+    <sys:String x:Key="Controller_QuickTips1_Description_formatted">Click on ~New question~, give it a title, a description and a solution, then click ~Create~.</sys:String>
+    
+    <sys:String x:Key="Controller_QuickTips2_Title">How to modify a question?</sys:String>
+    <sys:String x:Key="Controller_QuickTips2_Description_formatted">Click anywhere on a question. 
+        You will see the same dialog creation interface as before, but clicking ~Save~ will now modify your existing question.</sys:String>
+
+    <sys:String x:Key="Controller_QuickTips3_Title">What else can I do?</sys:String>
+    <sys:String x:Key="Controller_QuickTips3_Description_formatted">When editing a question, click the ~Advanced~ dropdown to see more options.</sys:String>
+
+    <sys:String x:Key="Controller_QuickTips4_Title">What order do the questions play in?</sys:String>
+    <sys:String x:Key="Controller_QuickTips4_Description_formatted">The questions will play in the same order as you see them in the list.
+        You can move the questions around by clicking on the ~up~ or ~down arrow~.</sys:String>
+
+    <sys:String x:Key="Controller_Ordering_ErrorTitle">Can't move this question</sys:String>
+    <sys:String x:Key="Controller_Ordering_ErrorTop">It is already at the top!</sys:String>
+    <sys:String x:Key="Controller_Ordering_ErrorBottom">It is already at the bottom!</sys:String>
+    
+    <!-- Question creation and editing dialog -->
+    <sys:String x:Key="QuestEdit_Create_Title">Create a new question</sys:String>
+    <sys:String x:Key="QuestEdit_Edit_Title">Edit an existing question</sys:String>
+    <sys:String x:Key="QuestEdit_Create_Confirm">Create</sys:String>
+    <sys:String x:Key="QuestEdit_Edit_Confirm">Save</sys:String>
+    <sys:String x:Key="QuestEdit_SaveFailed">Could not save the question.</sys:String>
+    <!-- TODO: tba -->
+    
+    <!-- Meta question editing dialog-->
+    <sys:String x:Key="MetaEdit_Edit_Title">Edit the game configuration</sys:String>
+    <sys:String x:Key="MetaEdit_Edit_Confirm">Save</sys:String>
+    <sys:String x:Key="MetaEdit_SaveFailed">Could not save the game configuration.</sys:String>
+    <!-- TODO: tba -->
+    
+    <!-- Settings -->
+    <sys:String x:Key="Settings_SectionTheme">Theme</sys:String>
+    <sys:String x:Key="Settings_SectionThemeDescription">Choose between a lighter or darker shade of background</sys:String>
+    <sys:String x:Key="Settings_DarkTheme">Dark theme</sys:String>
+    <sys:String x:Key="Settings_DarkThemeDescription">Use darker colors in dark work environments</sys:String>
+    <sys:String x:Key="Settings_SectionAccent">Accent color</sys:String>
+    <sys:String x:Key="Settings_SectionAccentDescription">The colorful elements of the application will follow this color</sys:String>
+    <sys:String x:Key="Settings_SectionTroubleshooting">Troubleshooting</sys:String>
+
+</ResourceDictionary>

@@ -15,6 +15,8 @@ namespace EscapeRoom.Configuration
         public bool DebugFeatures = false;
 #endif
 
+        public string Language { get; set; } = "EN";
+
         // TODO: client requirements, change for production
         public Question.QuestSuccessType DefaultQuestSuccessType { get; set; } = Question.QuestSuccessType.ImageText;
         public Question.QuestFailureType DefaultQuestFailureType { get; set; } = Question.QuestFailureType.ShakePlayGrid;
