@@ -41,6 +41,22 @@
             </StackPanel>
 
             <TextBlock Margin="0,10,0,0">
+                    <Run Foreground="{DynamicResource Accent}" FontWeight="Medium" Text="Animations &amp; blur effects" />
+            </TextBlock>
+
+            <StackPanel>
+                <xz_buttons:CheckBoxButton x:Name="animationsCheckBox" Icon="" Title="Enable animations" Description="" IsActiveChanged="animationsCheckBox_IsActiveChanged" />
+
+                <TextBlock Text="Blur quality" Margin="0,0,0,8" />
+
+                <StackPanel x:Name="blurStackPanel">
+                    <xz_controls:RadioButton Text="Disable blur effects" Tag="Off" IsActiveChanged="blurRadioButton_IsActiveChanged" />
+                    <xz_controls:RadioButton Text="Low quality" Tag="Low" IsActiveChanged="blurRadioButton_IsActiveChanged" />
+                    <xz_controls:RadioButton Text="High quality" Tag="High" IsActiveChanged="blurRadioButton_IsActiveChanged" />
+                </StackPanel>
+            </StackPanel>
+
+            <TextBlock Margin="0,10,0,0">
                     <Run Foreground="{DynamicResource Accent}" FontWeight="Medium" Text="Debug options" />
             </TextBlock>
 
