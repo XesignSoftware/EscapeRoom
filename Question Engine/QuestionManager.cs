@@ -33,7 +33,7 @@ namespace EscapeRoom.QuestionHandling
 
             return configDir + file;
         }
-        public string ReadQuestsListFromJSON_Literal()
+        public string ReadJSON_Literal()
         {
             return File.ReadAllText(GetPathForJSON(QuestsJSON));
         }

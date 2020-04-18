@@ -43,7 +43,7 @@ namespace EscapeRoom
             {
                 this.Focus();
                 QuestionManager.WriteEmptyQuestsJSON();
-                contentDialogHost.TextContentDialog("Quests reset", string.Format("The quests have been reset!\n\n{0}", QuestionManager.ReadQuestsListFromJSON_Literal()));
+                contentDialogHost.TextContentDialog("Quests reset", string.Format("The quests have been reset!\n\n{0}", QuestionManager.ReadJSON_Literal()));
             }
 
             if (Keyboard.IsKeyDown(Key.LeftShift) & Keyboard.IsKeyDown(Key.F11))
@@ -592,7 +592,7 @@ namespace EscapeRoom
 
         private void debug_ReadQuestsJSONFile_Click(object sender, RoutedEventArgs e)
         {
-            contentDialogHost.TextContentDialog("", QuestionManager.ReadQuestsListFromJSON_Literal());
+            contentDialogHost.TextContentDialog("", QuestionManager.ReadJSON_Literal());
         }
         private void debug_ClearJSON_Click(object sender, RoutedEventArgs e)
         {
