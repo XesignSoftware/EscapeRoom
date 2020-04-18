@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,11 +15,7 @@ namespace EscapeRoom.Configuration
 #else
         public bool DebugFeatures = false;
 #endif
-
-        // TODO: client requirements, change for production
-        public Question.QuestSuccessType DefaultQuestSuccessType { get; set; } = Question.QuestSuccessType.ImageText;
-        public Question.QuestFailureType DefaultQuestFailureType { get; set; } = Question.QuestFailureType.ShakePlayGrid;
-
+        public string BlurLevel { get; set; } = "Off";
         public bool Animations { get; set; } = true;
 
         ThemeManager.Theme? _Theme;
@@ -37,7 +34,9 @@ namespace EscapeRoom.Configuration
 
         public ThemeManager.Accent? UserAccent = null;
 
+#pragma warning disable IDE0052 // Remove unread private members
         ThemeManager.Accent _Accent;
+#pragma warning restore IDE0052 // Remove unread private members
         public ThemeManager.Accent? Accent
         {
             get
