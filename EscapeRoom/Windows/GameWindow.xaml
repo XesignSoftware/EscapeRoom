@@ -40,7 +40,7 @@
                     </Grid.RowDefinitions>
 
                     <Grid x:Name="mediaContainer" HorizontalAlignment="Center" Margin="0,0,0,40" MaxWidth="700" MaxHeight="400">
-
+                        
                     </Grid>
 
                     <TextBlock x:Name="title_TextBlock" FontSize="78" Text="Q Title" HorizontalAlignment="Center" Grid.Row="1"
@@ -57,13 +57,30 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <Border BorderBrush="{DynamicResource Foreground_Secondary}" BorderThickness="1" Opacity="0.1" Grid.Row="2" />
-                        <TextBlock Text="Válaszd ki a helyes választ:" />
+                        <TextBlock Text="Válaszd ki a helyes választ:" FontSize="18" />
                         <StackPanel x:Name="input_choicesStackPanel" Orientation="Vertical" Grid.Row="1">
+                            <StackPanel.Resources>
+                                <Style TargetType="buttons:NavMenuItem">
+                                    <Setter Property="FontSize" Value="18" />
+                                </Style>
+                            </StackPanel.Resources>
                             <buttons:NavMenuItem Icon="" />
                             <buttons:NavMenuItem Icon="" />
                             <buttons:NavMenuItem Icon="" />
                             <buttons:NavMenuItem Icon="" />
                         </StackPanel>
+                    </Grid>
+                </Grid>
+
+                <Grid x:Name="endingGrid" Visibility="Hidden">
+                    <Rectangle Fill="{DynamicResource Background_Solid}" />
+                    <Grid Margin="350,80" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Image x:Name="ending_Image" Source="C:\Users\Felix\Downloads\89324597_628416187954309_4093616750967390208_n.png" />
+                        <TextBlock x:Name="ending_TextBlock" FontSize="26" Text="ENDING" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Grid>
                 </Grid>
             </Grid>
@@ -73,15 +90,15 @@
                 <!-- Background blur -->
                 <Rectangle x:Name="rectangle">
                     <Rectangle.Fill>
-                        <VisualBrush Visual="{Binding ElementName=playGrid}" Stretch="None" />
+                        <VisualBrush Visual="{Binding ElementName=playGrid}" Stretch="None" Viewport="0,0,1,1.0714" AlignmentY="Top" />
                     </Rectangle.Fill>
                     <Rectangle.Effect>
-                        <BlurEffect x:Name="result_Blur" Radius="15" RenderingBias="Performance" />
+                        <BlurEffect x:Name="result_Blur" Radius="10" RenderingBias="Performance" />
                     </Rectangle.Effect>
                 </Rectangle>
 
                 <!-- Background fade -->
-                <Rectangle x:Name="result_Dim" Fill="{DynamicResource Background}" Opacity="0.75" />
+                <Rectangle x:Name="result_Dim" Fill="{DynamicResource Background}" Opacity="0.95" />
 
                 <!-- Image -->
                 <Grid x:Name="succ_imgGrid" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="165,80" Visibility="Hidden" RenderTransformOrigin="0.5,0.5">
@@ -155,18 +172,6 @@
                     </StackPanel>
                 </Grid>
 
-            </Grid>
-
-            <Grid x:Name="endingGrid" Visibility="Hidden">
-                <Rectangle Fill="{DynamicResource Background_Solid}" />
-                <Grid Margin="350,80" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Image x:Name="ending_Image" Source="C:\Users\Felix\Downloads\89324597_628416187954309_4093616750967390208_n.png" />
-                    <TextBlock x:Name="ending_TextBlock" FontSize="26" Text="ENDING" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                </Grid>
             </Grid>
         </Grid>
 

@@ -160,22 +160,8 @@ namespace EscapeRoom.Windows
             }
         }
         public string QuestionInputSolution { get; set; }
-        public string QuestionSuccessMediaPath
-        {
-            get { return succ_img_Image.Source.ToString(); }
-            set { CreateImageSource(value); }
-        }
-        string _successText;
-        public string QuestionSuccessText
-        {
-            get { return _successText; }
-            set
-            {
-                _successText = value;
-                succ_img_TextBlock.Text = value;
-                success_textblock.Text = value != "" ? value : MetaConfig.DefaultQuestionSuccessText;
-            }
-        }
+        public string QuestionSuccessMediaPath { get; set; }
+        public string QuestionSuccessText { get; set; }
         public string EndingMediaPath
         {
             get { return ending_Image.Source.ToString(); }
@@ -352,7 +338,7 @@ namespace EscapeRoom.Windows
         public event RoutedEventHandler ChoiceClicked;
         NavMenuItem CreateChoiceButton(string text, bool solution = false)
         {
-            NavMenuItem button = new NavMenuItem() { Icon = "", Text = text };
+            NavMenuItem button = new NavMenuItem() { Icon = "", Text = text, FontSize = 17 };
 
             if (solution)
                 button.Tag = "solution";
@@ -397,9 +383,8 @@ namespace EscapeRoom.Windows
                     PlayStoryboard(result_In); break;
                 case ResultEvent.Forwards:
                 case ResultEvent.Dismiss:
-                    PlayStoryboard(result_Out); break;
                 case ResultEvent.Ending: // TODO: Animation for ending
-                    break;
+                    PlayStoryboard(result_Out); break;
             }
 
             switch (@event)
@@ -465,6 +450,11 @@ namespace EscapeRoom.Windows
         }
         public async Task Success()
         {
+            // set text and media
+            succ_img_Image.Source = CreateImageSource(QuestionSuccessMediaPath);
+            succ_img_TextBlock.Text = QuestionSuccessText;
+            success_textblock.Text = QuestionSuccessText != "" ? QuestionSuccessText : MetaConfig.DefaultQuestionSuccessText;
+
             HandleResultView(ResultEvent.Success);
 
             SetTitlebarColor("Success");
@@ -493,26 +483,6 @@ namespace EscapeRoom.Windows
             // TODO: Display media on failure?
             if (Question.SkipOnFailure)
                 Forwards();
-        }
-        public void Forwards()
-        {
-            input_TextField.Clear();
-            SetTitlebarColor("Accent");
-
-            if (!IsGameAuto)
-                HandleResultView(ResultEvent.Dismiss);
-            else
-            {
-                // increase auto counter and invoke next question loading
-                auto_counter++;
-                if (auto_counter != QuestionList.Count)
-                {
-                    HandleResultView(ResultEvent.Forwards);
-                    Invoke_Loading(auto_counter);
-                }
-                else
-                    Ending();
-            }
         }
 
         // Automatic gamemode
@@ -553,6 +523,26 @@ namespace EscapeRoom.Windows
         public bool IsGameAuto
         {
             get { if (QuestionList == null) return false; else return true; }
+        }
+        public void Forwards()
+        {
+            input_TextField.Clear();
+            SetTitlebarColor("Accent");
+
+            if (!IsGameAuto)
+                HandleResultView(ResultEvent.Dismiss);
+            else
+            {
+                // increase auto counter and invoke next question loading
+                auto_counter++;
+                if (auto_counter != QuestionList.Count)
+                {
+                    HandleResultView(ResultEvent.Forwards);
+                    Invoke_Loading(auto_counter);
+                }
+                else
+                    Ending();
+            }
         }
         public void Ending()
         {
