@@ -56,7 +56,9 @@ namespace EscapeRoom.Windows
             Config = ControllerWindow.Config;
             MetaConfig = QuestionManager.GetMetaConfigFromJSON();
 
-            // hook to OnLoading
+            titleBar.TargetWindow = this;
+
+            // hook up events
             OnLoading += GameWindow_OnLoading;
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -226,6 +228,7 @@ namespace EscapeRoom.Windows
         Exception EX_INIT_AMBIGIOUS = new Exception("[init] Both a Question and a List<Question> were passed!");
         Exception EX_MEDIA_NULL = new Exception("Media is null.");
         Exception EX_MEDIA_INEXISTENT = new Exception("Media file does not exist.");
+        Exception EX_AUTO_QUESTLISTEMPTY = new Exception("There are no questions available.");
         #endregion
 
         async void UpdateMedia()
@@ -512,18 +515,6 @@ namespace EscapeRoom.Windows
         }
 
         // Automatic gamemode
-        int auto_counter = 0;
-        void Auto(List<Question> questList = null)
-        {
-            if (questList != null)
-                QuestionList = questList;
-
-            // sort the question list by QuestIDs
-            QuestionList = SortQuestionList(QuestionList);
-
-            auto_counter = 0;
-            Invoke_Loading(0);
-        }
 
         /// <summary>
         /// Gets the questions' IDs in a List form.
@@ -541,7 +532,23 @@ namespace EscapeRoom.Windows
 
             return finalQuestList;
         }
+        int auto_counter = 0;
+        void Auto(List<Question> questList = null)
+        {
+            if (questList != null)
+                QuestionList = questList;
 
+            if (QuestionList == null)
+                throw EX_AUTO_QUESTLISTEMPTY;
+            else if (QuestionList.Count == 0)
+                throw EX_AUTO_QUESTLISTEMPTY;
+
+            // sort the question list by QuestIDs
+            QuestionList = SortQuestionList(QuestionList);
+
+            auto_counter = 0;
+            Invoke_Loading(0);
+        }
         public bool IsGameAuto
         {
             get { if (QuestionList == null) return false; else return true; }
@@ -568,6 +575,12 @@ namespace EscapeRoom.Windows
         {
             Question quest = QuestionList[questID];
             Invoke_Loading(quest);
+        }
+
+        // Exception handling from ControllerWindow
+        public void OnUnhandledException(object sender, Exception ex)
+        {
+            ThrowException(ex);
         }
 
         #region Debug

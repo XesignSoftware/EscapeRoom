@@ -89,12 +89,15 @@ namespace EscapeRoom
             debug_versionString.Text = string.Format("{0} [{1}]", Version.VersionNumber, Version.BuildType);
             release_versionString.Text = string.Format("version: {0}", Version.VersionNumber);
         }
+        event EventHandler<Exception> UnhandledException;
         private async void Dispatcher_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
 
             await contentDialogHost.TextContentDialogAsync("An error has occured!", e.Exception.Message, true, "Continue anyway");
             splash_errorTextBlock.Text = string.Format("Error: {0}", e.Exception.Message);
+
+            UnhandledException?.Invoke(this, e.Exception);
         }
 
         // Question engine
@@ -248,6 +251,7 @@ namespace EscapeRoom
         GameWindow CreateGame(Question question)
         {
             GameWindow window = new GameWindow(question);
+            UnhandledException = window.OnUnhandledException;
             window.Show(); window.Activate();
 
             return window;
@@ -259,6 +263,7 @@ namespace EscapeRoom
         GameWindow CreateGameAuto(List<Question> questList)
         {
             GameWindow window = new GameWindow(questList);
+            UnhandledException = window.OnUnhandledException;
             window.Show(); window.Activate();
 
             return window;
