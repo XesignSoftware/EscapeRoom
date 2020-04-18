@@ -1,5 +1,6 @@
 ﻿using EscapeRoom.Configuration;
 using EscapeRoom.Dialogs;
+using EscapeRoom.FeatureControl;
 using EscapeRoom.QuestionHandling;
 using EscapeRoom.Windows;
 using System;
@@ -29,6 +30,8 @@ namespace EscapeRoom
         public EscapeRoomConfig Config = new EscapeRoomConfig();
         public QuestionManager QuestionManager = new QuestionManager();
         public ConfigurationManager ConfigurationManager = new ConfigurationManager();
+        public UIBlurUtils UIBlurUtils = new UIBlurUtils();
+        public FeatureControlManager FeatureControlManager = new FeatureControlManager();
 
         public ControllerWindow()
         {
@@ -476,6 +479,25 @@ namespace EscapeRoom
         #endregion
 
         // Window events
+        private async void contentDialogHost_DialogRequested(object sender, bool e)
+        {
+            if (!(bool)FeatureControlManager.GetFeature("ContentDialogHostBlur2020Q2").Value)
+                return;
+
+            if (e)
+            {
+                contentDialogHost_BlurGrid.Visibility = Visibility.Visible;
+                DoubleAnimation anim_in = new DoubleAnimation(UIBlurUtils.GetBlurLevel(Config.BlurLevel), TimeSpan.FromSeconds(.3));
+                contentDialogHost_BlurEffect.BeginAnimation(BlurEffect.RadiusProperty, anim_in);
+            }
+            else
+            {
+                DoubleAnimation anim_out = new DoubleAnimation(0, TimeSpan.FromSeconds(.3));
+                contentDialogHost_BlurEffect.BeginAnimation(BlurEffect.RadiusProperty, anim_out);
+                await Task.Delay(TimeSpan.FromSeconds(.3));
+                contentDialogHost_BlurGrid.Visibility = Visibility.Hidden;
+            }
+        }
         private async void Window_PreviewKeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
 #if DEBUG
