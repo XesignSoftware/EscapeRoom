@@ -85,11 +85,11 @@ namespace EscapeRoom.Dialogs
 
             if (DialogSuccessType == QuestSuccessType.ImageText)
             {
-                if (!File.Exists(media_pathTextField.Text))
+                if (!File.Exists(success_mediapathTextField.Text))
                     throw new FileNotFoundException();
-                if (!QuestionManager.IsValidMediaFile(media_pathTextField.Text))
+                if (!QuestionManager.IsValidMediaFile(success_mediapathTextField.Text))
                     throw new Exception("Invalid media type! - currently supported: .jpg, .png");
-                success_finalMediaPath = media_pathTextField.Text;
+                success_finalMediaPath = success_mediapathTextField.Text;
             }
 
             /*
