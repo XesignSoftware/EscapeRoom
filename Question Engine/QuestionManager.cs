@@ -17,9 +17,6 @@ namespace EscapeRoom.QuestionHandling
         {
 
         }
-        public event EventHandler QuestionsChanged;
-        public event EventHandler RemoveFailed;
-        public event EventHandler ModifyFailed;
 
         // JSON Read & get
         public string GetPathForJSON(string file)
@@ -42,10 +39,22 @@ namespace EscapeRoom.QuestionHandling
         }
 
         // Question functions
-        public List<Question> GetQuestsFromJSON()
+        public event EventHandler QuestionsChanged;
+        public event EventHandler RemoveFailed;
+        public event EventHandler ModifyFailed;
+
+        public QuestConfig GetQuestConfigFromJSON()
         {
             string file = File.ReadAllText(GetPathForJSON(QuestsJSON));
-            return JsonConvert.DeserializeObject<List<Question>>(file);
+            return JsonConvert.DeserializeObject<QuestConfig>(file);
+        }
+        public List<Question> GetQuestsFromJSON()
+        {
+            return GetQuestConfigFromJSON().QuestList;
+        }
+        public MetaConfig GetMetaConfigFromJSON()
+        {
+            return GetQuestConfigFromJSON().MetaConfig;
         }
         public int GetQuestionCount()
         {
@@ -226,27 +235,48 @@ namespace EscapeRoom.QuestionHandling
             AddQuestion(newQuestion, invokeEvent);
         }
 
+        public void UpdateMeta(MetaConfig meta)
+        {
+            SerializeQuestsJSON(meta);
+        }
+
         // JSON functions
         public void ClearQuestionList()
         {
             SerializeQuestsJSON(new List<Question>());
             QuestionsChanged?.Invoke(null, null);
         }
-        public void SerializeQuestsJSON(List<Question> list)
+        public void SerializeQuestsJSON(QuestConfig config)
         {
             using (StreamWriter file = File.CreateText(GetPathForJSON(QuestsJSON)))
             {
                 JsonSerializer ser = new JsonSerializer() { Formatting = Formatting.Indented };
-                ser.Serialize(file, list);
+                ser.Serialize(file, config);
             }
+        }
+        public void SerializeQuestsJSON(MetaConfig meta)
+        {
+            var config = GetQuestConfigFromJSON();
+            config.MetaConfig = meta;
+            SerializeQuestsJSON(config);
+        }
+        public void SerializeQuestsJSON(List<Question> list)
+        {
+            var config = GetQuestConfigFromJSON();
+            config.QuestList = list; // update quest list in QuestConfig
+            SerializeQuestsJSON(config);
         }
         void WriteEmptyQuestsJSON(string path)
         {
             using (StreamWriter file = File.CreateText(path))
             {
                 JsonSerializer ser = new JsonSerializer() { Formatting = Formatting.Indented };
-                ser.Serialize(file, new List<Question>());
+                ser.Serialize(file, new QuestConfig());
             }
+        }
+        public void WriteEmptyQuestsJSON()
+        {
+            SerializeQuestsJSON(new QuestConfig());
         }
 
         public bool IsValidMediaFile(string mediaPath)

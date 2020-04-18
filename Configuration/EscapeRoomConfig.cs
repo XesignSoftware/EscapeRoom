@@ -62,12 +62,5 @@ namespace EscapeRoom.Configuration
         }
         public ThemeManager.Accent Accent_Dark { get; set; } = ThemeManager.Accent.Pink;
         public ThemeManager.Accent Accent_Light { get; set; } = ThemeManager.Accent.Blue;
-
-        // Default question properties
-        public string DefaultQuestionSuccessText { get; set; } = "Helyes válasz!";
-        public string DefaultQuestionFailureText { get; set; } = "Helytelen válasz!";
-
-        // Game ending
-        public GameEnding Ending { get; set; } = new GameEnding();
     }
 }

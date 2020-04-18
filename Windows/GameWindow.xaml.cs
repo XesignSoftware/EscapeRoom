@@ -27,6 +27,7 @@ namespace EscapeRoom.Windows
         public Animation Animation = new Animation();
         ControllerWindow ControllerWindow = (ControllerWindow)Application.Current.MainWindow;
         QuestionManager QuestionManager = new QuestionManager();
+        MetaConfig MetaConfig;
 
         public GameWindow()
         {
@@ -53,6 +54,7 @@ namespace EscapeRoom.Windows
         private void Window_Initialized(object sender, EventArgs e)
         {
             Config = ControllerWindow.Config;
+            MetaConfig = QuestionManager.GetMetaConfigFromJSON();
 
             // hook to OnLoading
             OnLoading += GameWindow_OnLoading;
@@ -111,10 +113,11 @@ namespace EscapeRoom.Windows
             QuestionMediaPath = Question.QuestionMediaPath;
             PrepareQuestInput();
 
-            succ_img_Image.Source = CreateImageSource(Question.QuestionSuccessMediaPath); // create solution media
-            succ_img_TextBlock.Text = Question.QuestionSuccessText;
+            QuestionSuccessMediaPath = Question.QuestionSuccessMediaPath; // create solution media
+            QuestionSuccessText = Question.QuestionSuccessText;
 
-            ending_Image.Source = CreateImageSource(Config.Ending.MediaPath);
+            EndingMediaPath = MetaConfig.EndingMediaPath;
+            EndingText = MetaConfig.EndingText;
 
             titleBar.AppTitle = string.Format("EscapeRoom: " + // debug titlebar info
                     "[QuestID: {0} | QuestionType: {1} | QuestionInputType: {2} | QuestionSolution: \"{3}\"]"
@@ -156,6 +159,32 @@ namespace EscapeRoom.Windows
             }
         }
         public string QuestionInputSolution { get; set; }
+        public string QuestionSuccessMediaPath
+        {
+            get { return succ_img_Image.Source.ToString(); }
+            set { CreateImageSource(value); }
+        }
+        string _successText;
+        public string QuestionSuccessText
+        {
+            get { return _successText; }
+            set
+            {
+                _successText = value;
+                succ_img_TextBlock.Text = value;
+                success_textblock.Text = value != "" ? value : MetaConfig.DefaultQuestionSuccessText;
+            }
+        }
+        public string EndingMediaPath
+        {
+            get { return ending_Image.Source.ToString(); }
+            set { ending_Image.Source = CreateImageSource(value); }
+        }
+        public string EndingText
+        {
+            get { return ending_TextBlock.Text; }
+            set { ending_TextBlock.Text = value != "" ? value : MetaConfig.DefaultEndingText; }
+        }
         #endregion
         #region Animations
         Storyboard playGrid_ShakeAnim;
@@ -345,7 +374,7 @@ namespace EscapeRoom.Windows
         }
 
         // Result handling
-        public enum ResultEvent { Success, Failure, Forwards, Dismiss }
+        public enum ResultEvent { Success, Failure, Forwards, Dismiss, Ending }
 
         /// <summary>
         /// Handles the results view for specific events.
@@ -360,6 +389,8 @@ namespace EscapeRoom.Windows
                 case ResultEvent.Forwards:
                 case ResultEvent.Dismiss:
                     PlayStoryboard(result_Out); break;
+                case ResultEvent.Ending: // TODO: Animation for ending
+                    break;
             }
 
             switch (@event)
@@ -377,7 +408,6 @@ namespace EscapeRoom.Windows
                         case Question.QuestSuccessType.UI:
                             PlayStoryboard(result_In);
                             successGrid.Visibility = Visibility.Visible;
-                            success_textblock.Text = Question.QuestionSuccessText != "" ? Question.QuestionSuccessText : Config.DefaultQuestionSuccessText;
                             break;
                     }
                     break;
@@ -397,6 +427,20 @@ namespace EscapeRoom.Windows
                     if (Question.QuestionSuccessType == Question.QuestSuccessType.ImageText)
                         PlayStoryboard(result_Success_Img_Out);
                     break;
+                case ResultEvent.Ending:
+                {
+                    switch (MetaConfig.EndingType)
+                    {
+                        case MetaConfig.GameEndingType.None:
+                            break;
+                        case MetaConfig.GameEndingType.ImageText:
+                            // TODO: Proper animations &/ handling
+                            endingGrid.Visibility = Visibility.Visible;
+                            Animation.FadeIn(endingGrid);
+                            break;
+                    }
+                    break;
+                }
             }
         }
 
@@ -506,9 +550,7 @@ namespace EscapeRoom.Windows
         {
             OnEnding?.Invoke(null, null);
 
-            // TODO: Proper animations &/ handling
-            endingGrid.Visibility = Visibility.Visible;
-            Animation.FadeIn(endingGrid);
+            HandleResultView(ResultEvent.Ending);
 
             SetTitlebarColor("Success");
         }

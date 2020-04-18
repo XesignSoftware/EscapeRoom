@@ -42,7 +42,7 @@ namespace EscapeRoom
             if (Keyboard.IsKeyDown(Key.LeftShift) & Keyboard.IsKeyDown(Key.F10))
             {
                 this.Focus();
-                QuestionManager.ClearQuestionList();
+                QuestionManager.WriteEmptyQuestsJSON();
                 contentDialogHost.TextContentDialog("Quests reset", string.Format("The quests have been reset!\n\n{0}", QuestionManager.ReadQuestsListFromJSON_Literal()));
             }
 
@@ -185,11 +185,11 @@ namespace EscapeRoom
         }
 
         // Game ending configuration
-        async Task CallEndingEditDialog(GameEnding ending, UIElement comingfromPrev = null)
+        async Task CallMetaEditDialog(MetaConfig ending, UIElement comingfromPrev = null)
         {
             ContentDialog dialog = new ContentDialog()
             {
-                Title = "Játék vége módosítása",
+                Title = "Játékbeállítások módosítása",
                 PrimaryButtonText = "Mentés",
                 SecondaryButtonText = "Mégse",
                 IsDismissableByTouchBlocker = false
@@ -210,16 +210,16 @@ namespace EscapeRoom
 
             if (await contentDialogHost.ShowDialogAsync(dialog) == ContentDialogHost.ContentDialogResult.Primary)
             {
-                GameEnding newEnding;
+                MetaConfig newMeta;
 
                 try
                 {
                     var dialogContentForEditBuild = (MetaEditDialogContent)dialogContent;
-                    newEnding = dialogContentForEditBuild.Build();
+                    newMeta = dialogContentForEditBuild.Build();
                 }
                 catch (Exception ex)
                 {
-                    await contentDialogHost.TextContentDialogAsync("Could not save ending configuration!", ex.Message, true);
+                    await contentDialogHost.TextContentDialogAsync("Could not save meta configuration!", ex.Message, true);
 
                     // There was an error.
                     // Re-call the exact same dialog that the user just witnessed.
@@ -228,12 +228,11 @@ namespace EscapeRoom
                     dialog.Content = null;
 
                     // re-call the dialog with the same Content
-                    await CallEndingEditDialog(ending, dialogContent);
+                    await CallMetaEditDialog(ending, dialogContent);
                     return;
                 }
 
-                Config.Ending = newEnding;
-                ConfigurationManager.Save(Config);
+                QuestionManager.UpdateMeta(newMeta);
             }
         }
 
@@ -404,9 +403,9 @@ namespace EscapeRoom
             await contentDialogHost.ShowDialogAsync(dialog);
             LoadConfiguration();
         }
-        private async void configureEndingButton_Click(object sender, RoutedEventArgs e)
+        private async void configureMetaButton_Click(object sender, RoutedEventArgs e)
         {
-            await CallEndingEditDialog(Config.Ending);
+            await CallMetaEditDialog(QuestionManager.GetMetaConfigFromJSON());
         }
 
         #region Theming engine

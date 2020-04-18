@@ -61,13 +61,14 @@
     <Compile Include="Animation.cs" />
     <Compile Include="Configuration\EscapeRoomConfig.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
-    <Compile Include="Configuration\GameEnding.cs" />
+    <Compile Include="Question Engine\MetaConfig.cs" />
     <Compile Include="Dialogs\MetaEditDialogContent.xaml.cs">
       <DependentUpon>MetaEditDialogContent.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\SettingsDialogContent.xaml.cs">
       <DependentUpon>SettingsDialogContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Question Engine\QuestConfig.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Version.cs" />
     <Compile Include="Windows\GameWindow.xaml.cs">

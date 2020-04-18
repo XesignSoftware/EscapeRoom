@@ -12,26 +12,40 @@
 
         <StackPanel>
 
-            <TextBlock Text="Ending type:" />
-            <StackPanel x:Name="modify_typeStackPanel" Margin="0,8">
-                <xezui_controls:RadioButton Text="None" IsActiveChanged="TypeRadioButton_IsActiveChanged" Tag="None" />
-                <xezui_controls:RadioButton Text="Image &amp; text" IsActiveChanged="TypeRadioButton_IsActiveChanged" Tag="ImageText" />
+            <StackPanel x:Name="ending_StackPanel">
+                <TextBlock Foreground="{DynamicResource Accent}" FontWeight="Medium" Text="Játék vége"/>
+
+                <TextBlock Text="Ending type:" Margin="0,8" />
+                <StackPanel x:Name="modify_typeStackPanel">
+                    <xezui_controls:RadioButton Text="None" IsActiveChanged="TypeRadioButton_IsActiveChanged" Tag="None" />
+                    <xezui_controls:RadioButton Text="Image &amp; text" IsActiveChanged="TypeRadioButton_IsActiveChanged" Tag="ImageText" />
+                </StackPanel>
+
+                <StackPanel x:Name="modify_mediaStackPanel">
+                    <Grid x:Name="mediaContainer" Margin="0" MaxWidth="250" />
+
+                    <Grid Margin="0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <xezui_controls:TextField x:Name="media_pathTextField" Title="Media path:" TextChanged="media_pathTextField_TextChanged" />
+                        <buttons:ActionButton x:Name="media_browseButton" Grid.Column="1" Icon="&#xe838;" Text="BROWSE..." VerticalAlignment="Bottom" Margin="5,0,0,0" Height="34" Click="media_browseButton_Click" />
+                    </Grid>
+
+                    <xezui_controls:TextField x:Name="modify_endtextTextField" Title="Ending text:"/>
+                </StackPanel>
             </StackPanel>
 
-            <StackPanel x:Name="modify_mediaStackPanel">
-                <TextBlock Text="Game ending" />
-                <Grid x:Name="mediaContainer" Margin="0" MaxWidth="250" />
+            <StackPanel Margin="0,8">
+                <TextBlock>
+                    <Run Foreground="{DynamicResource Accent}" FontWeight="Medium" Text="Alapértelmezett szövegek" />
+                    <LineBreak />
+                    Ha nem adsz meg végeredményszöveget, ez a szöveg fog megjelenni.
+                </TextBlock>
 
-                <Grid Margin="0,8">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <xezui_controls:TextField x:Name="media_pathTextField" Title="Media path:" TextChanged="media_pathTextField_TextChanged" />
-                    <buttons:ActionButton x:Name="media_browseButton" Grid.Column="1" Icon="&#xe838;" Text="BROWSE..." VerticalAlignment="Bottom" Margin="5,0,0,0" Height="34" Click="media_browseButton_Click" />
-                </Grid>
-
-                <xezui_controls:TextField x:Name="modify_endtextTextField" Title="Ending text:" Margin="0,8"/>
+                <xezui_controls:TextField x:Name="DefaultSuccess_TextField" Title="Success:" Margin="0,8" />
+                <xezui_controls:TextField x:Name="DefaultFailure_TextField" Title="Failure:" />
             </StackPanel>
 
         </StackPanel>

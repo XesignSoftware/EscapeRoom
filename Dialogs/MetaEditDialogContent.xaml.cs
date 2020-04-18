@@ -26,17 +26,17 @@ namespace EscapeRoom.Dialogs
     public partial class MetaEditDialogContent : UserControl
     {
         ConfigurationManager ConfigurationManager = new ConfigurationManager();
-        GameEnding _ending;
+        MetaConfig MetaConfig;
 
         public MetaEditDialogContent()
         {
             InitializeComponent();
         }
-        public MetaEditDialogContent(GameEnding ending)
+        public MetaEditDialogContent(MetaConfig ending)
         {
             InitializeComponent();
 
-            _ending = ending;
+            MetaConfig = ending;
             LoadDialog();
         }
         private void main_Loaded(object sender, RoutedEventArgs e)
@@ -45,12 +45,14 @@ namespace EscapeRoom.Dialogs
         }
         void LoadDialog()
         {
-            SetDialogType(_ending.Type);
-            media_pathTextField.Text = _ending.MediaPath;
-            modify_endtextTextField.Text = _ending.EndingText;
+            SetDialogType(MetaConfig.EndingType);
+            media_pathTextField.Text = MetaConfig.EndingMediaPath;
             UpdateQuestionMedia();
+            modify_endtextTextField.Text = MetaConfig.EndingText;
+            DefaultSuccess_TextField.Text = MetaConfig.DefaultQuestionSuccessText;
+            DefaultFailure_TextField.Text = MetaConfig.DefaultQuestionFailureText;
         }
-        public GameEnding Build()
+        public MetaConfig Build()
         {
             string finalMediaPath = "";
 
@@ -63,11 +65,13 @@ namespace EscapeRoom.Dialogs
                 finalMediaPath = media_pathTextField.Text;
             }
 
-            return new GameEnding()
+            return new MetaConfig()
             {
-                Type = DialogGameEndingType,
-                MediaPath = finalMediaPath, // return empty when not selected, but don't delete textfield entry
-                EndingText = modify_endtextTextField.Text
+                EndingType = DialogGameEndingType,
+                EndingMediaPath = finalMediaPath, // return empty when not selected, but don't delete textfield entry
+                EndingText = modify_endtextTextField.Text,
+                DefaultQuestionSuccessText = DefaultSuccess_TextField.Text,
+                DefaultQuestionFailureText = DefaultFailure_TextField.Text
             };
         }
 
@@ -143,38 +147,38 @@ namespace EscapeRoom.Dialogs
             media_pathTextField.Text = openfileDialog.FileName;
         }
 
-        void SetDialogType(GameEnding.EndingType type)
+        void SetDialogType(MetaConfig.GameEndingType type)
         {
             foreach (XeZrunner.UI.Controls.RadioButton button in modify_typeStackPanel.Children)
                 if (type == StringToEndingType(button.Tag.ToString()))
                     button.IsActive = true;
         }
 
-        GameEnding.EndingType StringToEndingType(string str)
+        MetaConfig.GameEndingType StringToEndingType(string str)
         {
             switch (str)
             {
                 case "None":
-                    return GameEnding.EndingType.None;
+                    return MetaConfig.GameEndingType.None;
                 case "ImageText":
-                    return GameEnding.EndingType.ImageText;
+                    return MetaConfig.GameEndingType.ImageText;
                 default:
                     throw new Exception("StringToEndingType(): invalid string (\"" + str + "\")");
             }
         }
 
-        GameEnding.EndingType DialogGameEndingType;
+        MetaConfig.GameEndingType DialogGameEndingType;
         private void TypeRadioButton_IsActiveChanged(object sender, EventArgs e)
         {
             var button = (FrameworkElement)sender;
             switch (button.Tag)
             {
                 case "None":
-                    DialogGameEndingType = GameEnding.EndingType.None;
+                    DialogGameEndingType = MetaConfig.GameEndingType.None;
                     modify_mediaStackPanel.Visibility = Visibility.Collapsed;
                     break;
                 case "ImageText":
-                    DialogGameEndingType = GameEnding.EndingType.ImageText;
+                    DialogGameEndingType = MetaConfig.GameEndingType.ImageText;
                     modify_mediaStackPanel.Visibility = Visibility.Visible;
                     break;
             }
