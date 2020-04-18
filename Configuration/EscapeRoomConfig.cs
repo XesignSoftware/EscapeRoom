@@ -50,7 +50,7 @@ namespace EscapeRoom.Configuration
                         return Accent_Light;
                 }
                 else
-                    return _Accent;
+                    return UserAccent;
             }
             set
             {

@@ -51,8 +51,8 @@ namespace EscapeRoom.Dialogs
             {
                 if (Config.UserAccent == null & button.Text == "Default")
                 { button.IsActive = true; break; }
-                else if (button.Text == Config.Accent.ToString())
-                    button.IsActive = true;
+                else if (button.Text == Config.UserAccent.ToString())
+                { button.IsActive = true; break; }
             }
 
 #if DEBUG
@@ -82,9 +82,9 @@ namespace EscapeRoom.Dialogs
             foreach (XeZrunner.UI.Controls.RadioButton button in accentStackPanel.Children)
             {
                 if (button.Text == "Default" & button.IsActive)
-                    Config.UserAccent = null;
+                { Config.UserAccent = null; break; }
                 else if (button.IsActive)
-                    Config.UserAccent = ThemeManager.GetAccentFromString(button.Text);
+                { Config.UserAccent = ThemeManager.GetAccentFromString(button.Text); break; }
             }
 
             ConfigurationManager.Save(Config);
