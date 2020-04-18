@@ -162,7 +162,9 @@
                         <RowDefinition />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Image x:Name="succ_img_Image" Stretch="Uniform" Source="H:\Downloads\IMG_20181222_192622.jpg" />
+                    <Grid x:Name="succ_imgGrid_mediaContainer">
+                        <Image x:Name="succ_img_Image" Stretch="Uniform" Source="H:\Downloads\IMG_20181222_192622.jpg" />
+                    </Grid>
 
                     <TextBlock x:Name="succ_img_TextBlock" Grid.Row="1" Text="Helyes válasz!"
 							   HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,0"
@@ -170,40 +172,41 @@
                 </Grid>
 
                 <!-- Success -->
-                <Grid x:Name="succGrid" Visibility="Hidden">
+                <Grid x:Name="successGrid" Visibility="Hidden">
                     <StackPanel VerticalAlignment="Center">
                         <Grid>
-                            <Ellipse x:Name="succ_ellipse" Fill="#4CAF50" Width="180" Height="180" />
-                            <TextBlock x:Name="succ_textBlock" Text="&#xe081;" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="90" FontFamily="/Fonts/#Segoe MDL2 Assets" />
+                            <Ellipse x:Name="success_ellipse" Fill="#4CAF50" Width="180" Height="180" />
+                            <TextBlock x:Name="success_checkmark" Text="&#xe081;" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="90" FontFamily="/Fonts/#Segoe MDL2 Assets" />
                         </Grid>
 
-                        <TextBlock FontSize="72" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,40,0,0">Helyes válasz!</TextBlock>
+                        <TextBlock x:Name="success_textblock" FontSize="72" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,40,0,0">Helyes válasz!</TextBlock>
                     </StackPanel>
                 </Grid>
 
                 <!-- Failure -->
-                <Grid x:Name="failGrid" Visibility="Hidden">
+                <Grid x:Name="failureGrid" Visibility="Hidden">
 
                     <StackPanel VerticalAlignment="Center">
                         <Grid>
-                            <Ellipse x:Name="fail_ellipse" Fill="#f44336" Width="180" Height="180" />
-                            <TextBlock x:Name="fail_textBlock" Text="&#xe106;" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="90" FontFamily="/Fonts/#Segoe MDL2 Assets" />
+                            <Ellipse x:Name="failure_ellipse" Fill="#f44336" Width="180" Height="180" />
+                            <TextBlock x:Name="failure_crossmark" Text="&#xe106;" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="90" FontFamily="/Fonts/#Segoe MDL2 Assets" />
                         </Grid>
 
-                        <TextBlock FontSize="72" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,40,0,0">Helytelen válasz!</TextBlock>
+                        <TextBlock x:Name="failure_textblock" FontSize="72" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,40,0,0">Helytelen válasz!</TextBlock>
                     </StackPanel>
                 </Grid>
 
             </Grid>
 
-            <Grid x:Name="endingGrid" Background="White" Visibility="Hidden">
+            <Grid x:Name="endingGrid" Visibility="Hidden">
+                <Rectangle Fill="{DynamicResource Background_Solid}" />
                 <Grid Margin="350,80" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Image x:Name="ending_Image" Source="C:\Users\Felix\Downloads\89324597_628416187954309_4093616750967390208_n.png" />
-                    <TextBlock FontSize="26" Text="ENDING" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <TextBlock x:Name="ending_TextBlock" FontSize="26" Text="ENDING" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Grid>
             </Grid>
         </Grid>

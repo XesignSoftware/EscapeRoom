@@ -111,6 +111,11 @@ namespace EscapeRoom.Windows
             QuestionMediaPath = Question.QuestionMediaPath;
             PrepareQuestInput();
 
+            succ_img_Image.Source = CreateImageSource(Question.QuestionSuccessMediaPath); // create solution media
+            succ_img_TextBlock.Text = Question.QuestionSuccessText;
+
+            ending_Image.Source = CreateImageSource(Config.Ending.MediaPath);
+
             titleBar.AppTitle = string.Format("EscapeRoom: " + // debug titlebar info
                     "[QuestID: {0} | QuestionType: {1} | QuestionInputType: {2} | QuestionSolution: \"{3}\"]"
                     , Question.QuestID, Question.QuestionType, Question.QuestionInputType, QuestionInputSolution);
@@ -150,10 +155,7 @@ namespace EscapeRoom.Windows
                 UpdateMedia();
             }
         }
-
         public string QuestionInputSolution { get; set; }
-
-        public string QuestionSolutionMediaPath { get; set; }
         #endregion
         #region Animations
         Storyboard playGrid_ShakeAnim;
@@ -193,33 +195,31 @@ namespace EscapeRoom.Windows
         Exception EX_NULLQUEST = new Exception("The passed question is null.");
         Exception EX_UIRESULT_TODO = new Exception("UI results are not yet implemented!");
         Exception EX_INIT_AMBIGIOUS = new Exception("[init] Both a Question and a List<Question> were passed!");
+        Exception EX_MEDIA_NULL = new Exception("Media is null.");
+        Exception EX_MEDIA_INEXISTENT = new Exception("Media file does not exist.");
         #endregion
 
         async void UpdateMedia()
         {
             mediaContainer.Children.Clear();
 
-            if (QuestionMediaPath != null & QuestionMediaPath != "")
-            {
-                if (!File.Exists(QuestionMediaPath))
-                    return;
+            progress.Visibility = Visibility.Visible;
 
-                progress.Visibility = Visibility.Visible;
+            UIElement elementToAdd = await CreateMedia(QuestionMediaPath);
 
-                UIElement elementToAdd = await CreateMedia(QuestionMediaPath);
+            await Task.Delay(TimeSpan.FromSeconds(.5));
 
-                await Task.Delay(TimeSpan.FromSeconds(.5));
+            if (elementToAdd != null)
+                mediaContainer.Children.Add(elementToAdd);
 
-                if (elementToAdd != null)
-                    mediaContainer.Children.Add(elementToAdd);
-
-                Animation.FadeIn(mediaContainer);
-                await Animation.FadeOutAsync(progress);
-            }
+            Animation.FadeIn(mediaContainer);
+            await Animation.FadeOutAsync(progress);
         }
         async Task<UIElement> CreateMedia(string mediaPath)
         {
             if (mediaPath == null || mediaPath == "")
+                return new Image();
+            if (!File.Exists(mediaPath))
                 return new Image();
 
             switch (QuestionManager.GetFileExtension(mediaPath))
@@ -259,6 +259,15 @@ namespace EscapeRoom.Windows
                 default:
                     return null;
             }
+        }
+        BitmapImage CreateImageSource(string mediaPath)
+        {
+            if (mediaPath == null || mediaPath == "")
+                return new BitmapImage();
+            if (!File.Exists(mediaPath))
+                return new BitmapImage();
+
+            return new BitmapImage(new Uri(mediaPath));
         }
 
         // Input & choices handling
@@ -342,7 +351,7 @@ namespace EscapeRoom.Windows
         /// Handles the results view for specific events.
         /// </summary>
         /// <param name="event">The action ( to handle.</param>
-        async void HandleResultView(ResultEvent @event)
+        void HandleResultView(ResultEvent @event)
         {
             switch (@event)
             {
@@ -357,16 +366,19 @@ namespace EscapeRoom.Windows
             {
                 case ResultEvent.Success:
                 {
+                    // TODO: handle UI success type with animations
+                    successGrid.Visibility = Visibility.Collapsed;
+
                     switch (Question.QuestionSuccessType)
                     {
                         case Question.QuestSuccessType.ImageText:
                             PlayStoryboard(result_Success_Img_In);
-                            succ_img_Image = (Image)await CreateMedia(QuestionSolutionMediaPath); // create solution media
-                            succ_img_TextBlock.Text = Question.QuestionSuccessText;
-
                             break;
                         case Question.QuestSuccessType.UI:
-                            throw EX_UIRESULT_TODO;
+                            PlayStoryboard(result_In);
+                            successGrid.Visibility = Visibility.Visible;
+                            success_textblock.Text = Question.QuestionSuccessText != "" ? Question.QuestionSuccessText : Config.DefaultQuestionSuccessText;
+                            break;
                     }
                     break;
                 }
