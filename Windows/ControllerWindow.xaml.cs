@@ -597,7 +597,9 @@ namespace EscapeRoom
         private void debug_ClearJSON_Click(object sender, RoutedEventArgs e)
         {
             if (Keyboard.IsKeyDown(Key.LeftShift))
-                QuestionManager.WriteEmptyQuestsJSON();
+            {
+                QuestionManager.WriteEmptyQuestsJSON(); LoadQuestions();
+            }
             else
             {
                 List<Question> list = QuestionManager.GetQuestsFromJSON();
