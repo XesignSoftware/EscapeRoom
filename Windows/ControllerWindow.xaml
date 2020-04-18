@@ -49,7 +49,7 @@
                             <local:QuestionControl />
                         </StackPanel>
                         <Grid x:Name="metaquestionGrid" Grid.Row="1">
-                            
+
                         </Grid>
                     </Grid>
                 </ScrollViewer>
@@ -87,9 +87,8 @@
                 </Grid>
 
                 <StackPanel Grid.Row="3" Margin="0,10,0,0">
-
-                    <xezui_buttons:ActionButton x:Name="debug_ReadQuestsJSONFile" Icon="&#xe1ef;" Text="(DEBUG) Read Quests JSON file" Click="debug_ReadQuestsJSONFile_Click" />
-                    <xezui_buttons:ActionButton x:Name="debug_ClearJSON" MouseOverColor="{DynamicResource Red}" Icon="&#xe74d;" Text="(DEBUG) Delete all user questions" Click="debug_ClearJSON_Click" />
+                    <xezui_buttons:ActionButton x:Name="debug_ReadQuestsJSONFile" Icon="&#xE1EF;" Text="(DEBUG) Read Quests JSON file" Click="debug_ReadQuestsJSONFile_Click" />
+                    <xezui_buttons:ActionButton x:Name="debug_ClearJSON" MouseOverColor="{DynamicResource Red}" Icon="&#xE74D;" Text="(DEBUG) Delete all user questions" Click="debug_ClearJSON_Click" />
 
                 </StackPanel>
 
