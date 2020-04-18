@@ -257,7 +257,7 @@ namespace EscapeRoom.Windows
                     return new Image() { Source = image, Stretch = Stretch.UniformToFill };
                 }
                 default:
-                return null;
+                    return null;
             }
         }
 
@@ -347,10 +347,10 @@ namespace EscapeRoom.Windows
             switch (@event)
             {
                 case ResultEvent.Success:
-                PlayStoryboard(result_In); break;
+                    PlayStoryboard(result_In); break;
                 case ResultEvent.Forwards:
                 case ResultEvent.Dismiss:
-                PlayStoryboard(result_Out); break;
+                    PlayStoryboard(result_Out); break;
             }
 
             switch (@event)
@@ -360,12 +360,13 @@ namespace EscapeRoom.Windows
                     switch (Question.QuestionSuccessType)
                     {
                         case Question.QuestSuccessType.ImageText:
-                        PlayStoryboard(result_Success_Img_In);
-                        succ_img_Image = (Image)await CreateMedia(QuestionSolutionMediaPath); // create solution media
+                            PlayStoryboard(result_Success_Img_In);
+                            succ_img_Image = (Image)await CreateMedia(QuestionSolutionMediaPath); // create solution media
+                            succ_img_TextBlock.Text = Question.QuestionSuccessText;
 
-                        break;
+                            break;
                         case Question.QuestSuccessType.UI:
-                        throw EX_UIRESULT_TODO;
+                            throw EX_UIRESULT_TODO;
                     }
                     break;
                 }
@@ -374,16 +375,16 @@ namespace EscapeRoom.Windows
                     switch (Question.QuestionFailureType)
                     {
                         case Question.QuestFailureType.ShakePlayGrid:
-                        PlayStoryboard(playGrid_ShakeAnim); break;
+                            PlayStoryboard(playGrid_ShakeAnim); break;
                         case Question.QuestFailureType.UI:
-                        PlayStoryboard(result_In); throw EX_UIRESULT_TODO;
+                            PlayStoryboard(result_In); throw EX_UIRESULT_TODO;
                     }
                     break;
                 }
                 case ResultEvent.Forwards:
-                if (Question.QuestionSuccessType == Question.QuestSuccessType.ImageText)
-                    PlayStoryboard(result_Success_Img_Out);
-                break;
+                    if (Question.QuestionSuccessType == Question.QuestSuccessType.ImageText)
+                        PlayStoryboard(result_Success_Img_Out);
+                    break;
             }
         }
 

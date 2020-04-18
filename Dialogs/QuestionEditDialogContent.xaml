@@ -65,14 +65,29 @@
 					<TextBlock Text="On solution:" />
 
 					<StackPanel x:Name="successTypeStackPanel" Margin="0,8">
-						<xezui_controls:RadioButton Text="Don't show anything and continue" Tag="None" />
-						<xezui_controls:RadioButton Text="Show a green checkmark" Tag="UI" />
-						<xezui_controls:RadioButton Text="Show a picture (and text)" Tag="ImageText" />
+						<xezui_controls:RadioButton Text="Don't show anything and continue" Tag="None" IsActiveChanged="SuccessRadioButton_IsActiveChanged" />
+                        <xezui_controls:RadioButton Text="Show a green checkmark" Tag="UI" IsActiveChanged="SuccessRadioButton_IsActiveChanged" />
+                        <xezui_controls:RadioButton Text="Show a picture (and text)" Tag="ImageText" IsActiveChanged="SuccessRadioButton_IsActiveChanged" />
 					</StackPanel>
 
-					<TextBlock Text="On incorrect answer:" />
+                    <StackPanel x:Name="success_mediaStackPanel">
+                        <Grid x:Name="success_mediaContainer" Margin="0" MaxWidth="250" />
 
-					<StackPanel x:Name="failureTypeStackPanel" Margin="0,8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <xezui_controls:TextField x:Name="success_mediapathTextField" Title="Success media path:" TextChanged="success_mediapathTextField_TextChanged" />
+                            <buttons:ActionButton x:Name="success_mediabrowseButton" Grid.Column="1" Icon="&#xe838;" Text="BROWSE..." VerticalAlignment="Bottom" Margin="5,0,0,0" Height="34" Click="success_mediabrowseButton_Click" />
+                        </Grid>
+                    </StackPanel>
+
+                    <xezui_controls:TextField x:Name="success_TextTextField" Title="Success text:" Margin="0,0,0,8" />
+
+                    <TextBlock Text="On incorrect answer:" />
+
+					<StackPanel x:Name="failureTypeStackPanel">
 						<xezui_controls:RadioButton Text="Shake the screen elements" Tag="ShakePlayGrid" />
 						<xezui_controls:RadioButton Text="Show a red cross symbol" Tag="UI" />
 					</StackPanel>

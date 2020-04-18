@@ -60,11 +60,19 @@ namespace EscapeRoom.Dialogs
             UpdateQuestionMedia();
             UpdateQuestionInputType();
 
+            // success
+            SetDialogSuccessType(_question.QuestionSuccessType);
+            success_mediapathTextField.Text = _question.QuestionSuccessMediaPath;
+            success_TextTextField.Text = _question.QuestionSuccessText;
+
+            // failure
+
             skipOnFailureCheckbox.IsActive = _question.SkipOnFailure;
         }
         public Question BuildQuestion()
         {
             string finalMediaPath = "";
+            string success_finalMediaPath = "";
 
             if (GetDialogQuestVariant().Value == QuestType.ImageQuestion)
             {
@@ -73,6 +81,15 @@ namespace EscapeRoom.Dialogs
                 if (!QuestionManager.IsValidMediaFile(media_pathTextField.Text))
                     throw new Exception("Invalid media type! - currently supported: .jpg, .png");
                 finalMediaPath = media_pathTextField.Text;
+            }
+
+            if (DialogSuccessType == QuestSuccessType.ImageText)
+            {
+                if (!File.Exists(media_pathTextField.Text))
+                    throw new FileNotFoundException();
+                if (!QuestionManager.IsValidMediaFile(media_pathTextField.Text))
+                    throw new Exception("Invalid media type! - currently supported: .jpg, .png");
+                success_finalMediaPath = media_pathTextField.Text;
             }
 
             /*
@@ -95,6 +112,10 @@ namespace EscapeRoom.Dialogs
                 QuestionInputSolution = modify_inputTextField.Text,
                 QuestionInputType = GetDialogQuestInputType(),
                 QuestionChoices = GetDialogChoices(),
+
+                QuestionSuccessType = DialogSuccessType,
+                QuestionSuccessMediaPath = success_finalMediaPath,
+                QuestionSuccessText = success_TextTextField.Text,
 
                 SkipOnFailure = skipOnFailureCheckbox.IsActive
             };
@@ -132,6 +153,30 @@ namespace EscapeRoom.Dialogs
         }
 
         // Dialog content functions
+        /// <summary>
+        /// Sets the QuestionType RadioButtons in the dialog
+        /// </summary>
+        void SetDialogQuestVariant(Question.QuestType questVariant, bool activateButton = true)
+        {
+            if (activateButton)
+            {
+                foreach (XeZrunner.UI.Controls.RadioButton button in modify_TypeRadioButtonStackPanel.Children)
+                {
+                    string buttonTag = (string)button.Tag;
+
+                    if (buttonTag == TagFromQuestVariant(questVariant))
+                        button.IsActive = true;
+                }
+            }
+
+            if (questVariant == Question.QuestType.ImageQuestion)
+            {
+                modify_mediaStackPanel.Visibility = Visibility.Visible; // show media controls
+                UpdateQuestionMedia();
+            }
+            else
+                modify_mediaStackPanel.Visibility = Visibility.Collapsed; // hide media controls
+        }
         /// <summary>
         /// Gets the user-customized new quest varaint to build the new Question with.
         /// </summary>
@@ -177,6 +222,7 @@ namespace EscapeRoom.Dialogs
 
             throw new Exception("None of the question input type RadioButtons were active!");
         }
+
         UIElement CreateMedia(string mediaPath)
         {
             switch (QuestionManager.GetFileExtension(mediaPath))
@@ -195,31 +241,6 @@ namespace EscapeRoom.Dialogs
                 default:
                 return null;
             }
-        }
-
-        /// <summary>
-        /// Sets the QuestionType RadioButtons in the dialog
-        /// </summary>
-        void SetDialogQuestVariant(Question.QuestType questVariant, bool activateButton = true)
-        {
-            if (activateButton)
-            {
-                foreach (XeZrunner.UI.Controls.RadioButton button in modify_TypeRadioButtonStackPanel.Children)
-                {
-                    string buttonTag = (string)button.Tag;
-
-                    if (buttonTag == TagFromQuestVariant(questVariant))
-                        button.IsActive = true;
-                }
-            }
-
-            if (questVariant == Question.QuestType.ImageQuestion)
-            {
-                modify_mediaStackPanel.Visibility = Visibility.Visible; // show media controls
-                UpdateQuestionMedia();
-            }
-            else
-                modify_mediaStackPanel.Visibility = Visibility.Collapsed; // hide media controls
         }
         void UpdateQuestionMedia()
         {
@@ -278,6 +299,25 @@ namespace EscapeRoom.Dialogs
 
                 modify_choicesTextField.Text += choice;
                 counter++;
+            }
+        }
+        void UpdateQuestionSuccessMedia()
+        {
+            if (DialogSuccessType != QuestSuccessType.ImageText)
+                return;
+
+            string mediaPath = success_mediapathTextField.Text;
+
+            success_mediaContainer.Children.Clear();
+
+            if (mediaPath != null & mediaPath != "")
+            {
+                if (!File.Exists(mediaPath))
+                    return;
+
+                UIElement elementToAdd = CreateMedia(mediaPath);
+                if (elementToAdd != null)
+                    success_mediaContainer.Children.Add(elementToAdd);
             }
         }
         List<string> GetDialogChoices()
@@ -416,6 +456,80 @@ namespace EscapeRoom.Dialogs
                 advancedStackPanel.Visibility = Visibility.Collapsed;
                 advanced_ChevronButton.Icon = "\ue70d";
             }
+        }
+
+        Question.QuestSuccessType DialogSuccessType;
+        Question.QuestSuccessType StringToSuccessType(string str)
+        {
+            switch (str)
+            {
+                case "None":
+                    return QuestSuccessType.None;
+                case "UI":
+                    return QuestSuccessType.UI;
+                case "ImageText":
+                    return QuestSuccessType.ImageText;
+                default:
+                    throw new Exception("SuccessTypeFromString(): invalid string (\"" + str + "\")");
+            }
+        }
+        void SetDialogSuccessType(QuestSuccessType type, bool activateButton = true)
+        {
+            if (activateButton)
+            {
+                foreach (XeZrunner.UI.Controls.RadioButton button in successTypeStackPanel.Children)
+                {
+                    string buttonTag = (string)button.Tag;
+
+                    if (type == StringToSuccessType(buttonTag))
+                        button.IsActive = true;
+                }
+            }
+
+            switch (type)
+            {
+                case QuestSuccessType.None:
+                    success_mediaStackPanel.Visibility = Visibility.Collapsed;
+                    success_TextTextField.Visibility = Visibility.Collapsed;
+                    break;
+                case QuestSuccessType.UI:
+                    success_mediaStackPanel.Visibility = Visibility.Collapsed;
+                    success_TextTextField.Visibility = Visibility.Visible;
+                    break;
+                case QuestSuccessType.ImageText:
+                    success_mediaStackPanel.Visibility = Visibility.Visible;
+                    success_TextTextField.Visibility = Visibility.Visible;
+                    break;
+            }
+        }
+        private void SuccessRadioButton_IsActiveChanged(object sender, EventArgs e)
+        {
+            var button = (FrameworkElement)sender;
+            DialogSuccessType = StringToSuccessType(button.Tag.ToString());
+            SetDialogSuccessType(DialogSuccessType, false);
+        }
+        private async void success_mediapathTextField_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string originalText = success_mediapathTextField.Text;
+
+            UpdateQuestionSuccessMedia();
+
+            // stop processing input for 1 sec
+            success_mediapathTextField.TextChangedHandled = false;
+            await Task.Delay(TimeSpan.FromSeconds(1));
+            success_mediapathTextField.TextChangedHandled = true;
+
+            if (success_mediapathTextField.Text != originalText)
+                success_mediapathTextField_TextChanged(sender, e);
+        }
+        private void success_mediabrowseButton_Click(object sender, RoutedEventArgs e)
+        {
+            bool? result = openfileDialog.ShowDialog();
+
+            if (!result.HasValue || !result.Value)
+                return;
+
+            success_mediapathTextField.Text = openfileDialog.FileName;
         }
     }
 }
