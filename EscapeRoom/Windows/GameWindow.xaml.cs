@@ -28,6 +28,7 @@ namespace EscapeRoom.Windows
         ControllerWindow ControllerWindow = (ControllerWindow)Application.Current.MainWindow;
         QuestionManager QuestionManager = new QuestionManager();
         MetaConfig MetaConfig;
+        UIBlurUtils UIBlurUtils = new UIBlurUtils();
 
         public GameWindow()
         {
@@ -61,7 +62,7 @@ namespace EscapeRoom.Windows
             // hook up events
             OnLoading += GameWindow_OnLoading;
         }
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // fullscreen
             this.WindowState = WindowState.Maximized;
@@ -79,28 +80,22 @@ namespace EscapeRoom.Windows
             DebugFeatures = ControllerWindow.DebugFeatures;
 
             // hide elements that need to be hidden
-            resultGrid.Visibility = Visibility.Collapsed;
+            resultGrid.Visibility = Visibility.Hidden;
+            playGrid.Visibility = Visibility.Hidden;
+            result_Blur.Radius = 0;
 
             if (Question != null & QuestionList != null)
                 throw EX_INIT_AMBIGIOUS;
+
+            await Task.Delay(300);
 
             if (QuestionList != null)
                 Auto();
             else
                 LoadQuestion();
         }
-        void ThrowException(Exception ex)
-        {
-            QuestionTitle = "An error occured while loading the question.";
-            QuestionDescription = "Error: " + ex.Message;
-            input_TextField.Visibility = Visibility.Collapsed;
-            input_choicesGrid.Visibility = Visibility.Collapsed;
-
-            titleBar.SetResourceReference(BackgroundProperty, "Red");
-        }
         void LoadQuestion(Question quest = null)
-        {
-            if (quest != null)
+        {if (quest != null)
                 Question = quest;
 
             if (Question == null)
@@ -125,14 +120,16 @@ namespace EscapeRoom.Windows
                     "[QuestID: {0} | QuestionType: {1} | QuestionInputType: {2} | QuestionSolution: \"{3}\"]"
                     , Question.QuestID, Question.QuestionType, Question.QuestionInputType, QuestionInputSolution);
 
-            Animation.FadeIn(title_TextBlock);
-            Animation.FadeIn(desc_TextBlock);
-            Animation.FadeIn(input_TextField);
-            Animation.FadeIn(input_choicesGrid);
+            PlayStoryboard(start_Anim);
         }
-        void GameWindow_OnLoading(object sender, Question e)
+        void ThrowException(Exception ex)
         {
-            LoadQuestion(e);
+            QuestionTitle = "An error occured while loading the question.";
+            QuestionDescription = "Error: " + ex.Message;
+            input_TextField.Visibility = Visibility.Collapsed;
+            input_choicesGrid.Visibility = Visibility.Collapsed;
+
+            titleBar.SetResourceReference(BackgroundProperty, "Red");
         }
 
         #region Public properties
@@ -188,27 +185,43 @@ namespace EscapeRoom.Windows
             set { ending_TextBlock.Text = value != "" ? value : MetaConfig.DefaultEndingText; }
         }
         #endregion
-        #region Animations
+        #region Storyboards
+        Storyboard start_Anim;
         Storyboard playGrid_ShakeAnim;
 
         Storyboard result_In;
         Storyboard result_Out;
-
         Storyboard result_Success_Img_In;
         Storyboard result_Success_Img_Out;
+        Storyboard result_Success_In;
+        Storyboard result_Failure_In;
+        #endregion
+        #region Exceptions
+        Exception EX_NULLQUEST = new Exception("The passed question is null.");
+        Exception EX_UIRESULT_TODO = new Exception("UI results are not yet implemented!");
+        Exception EX_INIT_AMBIGIOUS = new Exception("[init] Both a Question and a List<Question> were passed!");
+        Exception EX_MEDIA_NULL = new Exception("Media is null.");
+        Exception EX_MEDIA_INEXISTENT = new Exception("Media file does not exist.");
+        Exception EX_AUTO_QUESTLISTEMPTY = new Exception("There are no questions available.");
+        #endregion
 
         void AssignStoryboards()
         {
+            // set blur effect
+            var keyframe_BlurRadius_In = (EasingDoubleKeyFrame)Resources["keyframe_BlurRadius_In"];
+            keyframe_BlurRadius_In.Value = UIBlurUtils.GetBlurLevel(Config.BlurLevel);
+
+            start_Anim = (Storyboard)FindResource(nameof(start_Anim));
             playGrid_ShakeAnim = (Storyboard)FindResource(nameof(playGrid_ShakeAnim));
 
             result_In = (Storyboard)FindResource(nameof(result_In));
+            result_Out = (Storyboard)FindResource(nameof(result_Out));
 
             result_Success_Img_In = (Storyboard)FindResource(nameof(result_Success_Img_In));
             result_Success_Img_Out = (Storyboard)FindResource(nameof(result_Success_Img_Out));
-
-            result_Out = (Storyboard)FindResource(nameof(result_Out));
+            result_Success_In = (Storyboard)FindResource(nameof(result_Success_In));
+            result_Failure_In = (Storyboard)FindResource(nameof(result_Failure_In));
         }
-
         void PlayStoryboard(Storyboard board)
         {
             board.Begin();
@@ -221,31 +234,22 @@ namespace EscapeRoom.Windows
             if (Keyboard.IsKeyDown(Key.LeftShift))
                 board.SetSpeedRatio(0.1);
         }
-        #endregion
-        #region Exceptions
-        Exception EX_NULLQUEST = new Exception("The passed question is null.");
-        Exception EX_UIRESULT_TODO = new Exception("UI results are not yet implemented!");
-        Exception EX_INIT_AMBIGIOUS = new Exception("[init] Both a Question and a List<Question> were passed!");
-        Exception EX_MEDIA_NULL = new Exception("Media is null.");
-        Exception EX_MEDIA_INEXISTENT = new Exception("Media file does not exist.");
-        Exception EX_AUTO_QUESTLISTEMPTY = new Exception("There are no questions available.");
-        #endregion
 
         async void UpdateMedia()
         {
             mediaContainer.Children.Clear();
 
-            progress.Visibility = Visibility.Visible;
+            //progress.Visibility = Visibility.Visible;
 
             UIElement elementToAdd = await CreateMedia(QuestionMediaPath);
 
-            await Task.Delay(TimeSpan.FromSeconds(.5));
+            //await Task.Delay(TimeSpan.FromSeconds(.5));
 
             if (elementToAdd != null)
                 mediaContainer.Children.Add(elementToAdd);
 
             Animation.FadeIn(mediaContainer);
-            await Animation.FadeOutAsync(progress);
+            //await Animation.FadeOutAsync(progress);
         }
         async Task<UIElement> CreateMedia(string mediaPath)
         {
@@ -400,18 +404,12 @@ namespace EscapeRoom.Windows
             {
                 case ResultEvent.Success:
                 {
-                    // TODO: handle UI success type with animations
-                    successGrid.Visibility = Visibility.Collapsed;
-
                     switch (Question.QuestionSuccessType)
                     {
                         case Question.QuestSuccessType.ImageText:
-                            PlayStoryboard(result_Success_Img_In);
-                            break;
+                            PlayStoryboard(result_Success_Img_In); break;
                         case Question.QuestSuccessType.UI:
-                            PlayStoryboard(result_In);
-                            successGrid.Visibility = Visibility.Visible;
-                            break;
+                            PlayStoryboard(result_Success_In); break;
                     }
                     break;
                 }
@@ -422,7 +420,8 @@ namespace EscapeRoom.Windows
                         case Question.QuestFailureType.ShakePlayGrid:
                             PlayStoryboard(playGrid_ShakeAnim); break;
                         case Question.QuestFailureType.UI:
-                            PlayStoryboard(result_In); throw EX_UIRESULT_TODO;
+                            PlayStoryboard(result_In);
+                            PlayStoryboard(result_Failure_In); break;
                     }
                     break;
                 }
@@ -470,10 +469,9 @@ namespace EscapeRoom.Windows
 
             OnSuccess?.Invoke(null, Question);
 
-            if (!IsGameAuto)
-                return;
+            if (Question.QuestionSuccessType != Question.QuestSuccessType.None)
+                await Task.Delay(SuccessTime);
 
-            await Task.Delay(SuccessTime);
             Forwards();
         }
         public async Task Failure()
@@ -484,14 +482,15 @@ namespace EscapeRoom.Windows
 
             OnFailure?.Invoke(null, Question);
 
-            if (!IsGameAuto)
-                return;
+            if (Question.QuestionFailureType == Question.QuestFailureType.UI)
+                await Task.Delay(FailureTime);
 
-            await Task.Delay(FailureTime);
+            HandleResultView(ResultEvent.Dismiss);
 
             SetTitlebarColor("Accent");
             // TODO: Display media on failure?
-            //Forwards();
+            if (Question.SkipOnFailure)
+                Forwards();
         }
         public void Forwards()
         {
@@ -576,6 +575,10 @@ namespace EscapeRoom.Windows
             Question quest = QuestionList[questID];
             Invoke_Loading(quest);
         }
+        void GameWindow_OnLoading(object sender, Question e)
+        {
+            LoadQuestion(e);
+        }
 
         // Exception handling from ControllerWindow
         public void OnUnhandledException(object sender, Exception ex)
@@ -604,7 +607,6 @@ namespace EscapeRoom.Windows
                 }
             }
         }
-
         public void SetTitlebarColor(string resourcename)
         {
             titleBar.ClearValue(BackgroundProperty);
@@ -615,12 +617,10 @@ namespace EscapeRoom.Windows
         {
             this.Close();
         }
-
         private void titleBar_MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
             this.WindowState = WindowState.Minimized;
         }
-
         private void titleBar_MaximizeButton_Click(object sender, RoutedEventArgs e)
         {
             if (this.WindowState == WindowState.Normal)
@@ -632,7 +632,6 @@ namespace EscapeRoom.Windows
                 this.Height = 768;
             }
         }
-
         private void Window_PreviewKeyUp(object sender, KeyEventArgs e)
         {
             if (Keyboard.IsKeyDown(Key.LeftCtrl))

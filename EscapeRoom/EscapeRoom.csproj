@@ -61,6 +61,10 @@
     <Compile Include="Animation.cs" />
     <Compile Include="Configuration\EscapeRoomConfig.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
+    <Compile Include="FeatureControl\EscapeRoomFeatureControl.cs" />
+    <Compile Include="FeatureControl\Feature.cs" />
+    <Compile Include="FeatureControl\FeatureControlManager.cs" />
+    <Compile Include="FeatureControl\FeatureUniverse.cs" />
     <Compile Include="Question Engine\MetaConfig.cs" />
     <Compile Include="Dialogs\MetaEditDialogContent.xaml.cs">
       <DependentUpon>MetaEditDialogContent.xaml</DependentUpon>
@@ -74,6 +78,10 @@
     <Compile Include="Windows\GameWindow.xaml.cs">
       <DependentUpon>GameWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Storyboards\GameWindow_Storyboards.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\MetaEditDialogContent.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1,5 +1,6 @@
 ﻿using EscapeRoom.Configuration;
 using EscapeRoom.Dialogs;
+using EscapeRoom.FeatureControl;
 using EscapeRoom.QuestionHandling;
 using EscapeRoom.Windows;
 using System;
@@ -10,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using XeZrunner.UI.Controls;
@@ -24,11 +26,13 @@ namespace EscapeRoom
     public partial class ControllerWindow : Window
     {
         public ThemeManager ThemeManager;
-        Version Version = new Version();
+        public Version Version = new Version();
         public Animation Animation = new Animation();
         public EscapeRoomConfig Config = new EscapeRoomConfig();
         public QuestionManager QuestionManager = new QuestionManager();
         public ConfigurationManager ConfigurationManager = new ConfigurationManager();
+        public UIBlurUtils UIBlurUtils = new UIBlurUtils();
+        public FeatureControlManager FeatureControlManager = new FeatureControlManager();
 
         public ControllerWindow()
         {
@@ -142,9 +146,8 @@ namespace EscapeRoom
                 IsDismissableByTouchBlocker = false
             };
 
-#if DEBUG
-            dialog.IsDismissableByTouchBlocker = true;
-#endif
+            if (DebugFeatures)
+                dialog.IsDismissableByTouchBlocker = true;
 
             UIElement dialogContent;
 
@@ -198,9 +201,8 @@ namespace EscapeRoom
                 IsDismissableByTouchBlocker = false
             };
 
-#if DEBUG
-            dialog.IsDismissableByTouchBlocker = true;
-#endif
+            if (DebugFeatures)
+                dialog.IsDismissableByTouchBlocker = true;
 
             UIElement dialogContent;
 
@@ -291,7 +293,7 @@ namespace EscapeRoom
 
         }
 
-       // Button events
+        // Button events
         private async void newButton_Click(object sender, RoutedEventArgs e)
         {
             if (!Keyboard.IsKeyDown(Key.LeftShift))
@@ -402,10 +404,11 @@ namespace EscapeRoom
         }
         private async void settingsButton_Click(object sender, RoutedEventArgs e)
         {
-            ContentDialog dialog = new ContentDialog() { Title = "Settings", PrimaryButtonText = "Accept" };
-            dialog.Content = new SettingsDialogContent();
+            SettingsDialogContent content = new SettingsDialogContent();
+            ContentDialog dialog = new ContentDialog() { Title = "Settings", PrimaryButtonText = "Accept", Content = content };
 
             await contentDialogHost.ShowDialogAsync(dialog);
+            ConfigurationManager.Save(content.Config);
             LoadConfiguration();
         }
         private async void configureMetaButton_Click(object sender, RoutedEventArgs e)
@@ -476,6 +479,25 @@ namespace EscapeRoom
         #endregion
 
         // Window events
+        private async void contentDialogHost_DialogRequested(object sender, bool e)
+        {
+            if (!(bool)FeatureControlManager.GetFeature("ContentDialogHostBlur2020Q2").Value)
+                return;
+
+            if (e)
+            {
+                contentDialogHost_BlurGrid.Visibility = Visibility.Visible;
+                DoubleAnimation anim_in = new DoubleAnimation(UIBlurUtils.GetBlurLevel(Config.BlurLevel), TimeSpan.FromSeconds(.3));
+                contentDialogHost_BlurEffect.BeginAnimation(BlurEffect.RadiusProperty, anim_in);
+            }
+            else
+            {
+                DoubleAnimation anim_out = new DoubleAnimation(0, TimeSpan.FromSeconds(.3));
+                contentDialogHost_BlurEffect.BeginAnimation(BlurEffect.RadiusProperty, anim_out);
+                await Task.Delay(TimeSpan.FromSeconds(.3));
+                contentDialogHost_BlurGrid.Visibility = Visibility.Hidden;
+            }
+        }
         private async void Window_PreviewKeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
 #if DEBUG
@@ -502,6 +524,8 @@ namespace EscapeRoom
                     debug_ClearJSON_Click(null, null);
                 if (e.Key == Key.B)
                     debug_ReadQuestsJSONFile_Click(null, null);
+                if (e.Key == Key.H)
+                    contentDialogHost.TextContentDialog("", ConfigurationManager.ReadConfigFromJSON_Literal());
                 if (e.Key == Key.N & Keyboard.IsKeyDown(Key.LeftAlt))
                     await CallQuestionEditDialog(true, new Question());
                 else if (e.Key == Key.N)
@@ -522,12 +546,9 @@ namespace EscapeRoom
                 if (Keyboard.IsKeyDown(Key.LeftCtrl))
                 {
                     if (e.Key == Key.Q)
-                        Config.Theme = ThemeManager.Theme.Light;
+                        SetTheme(ThemeManager.Theme.Light);
                     else if (e.Key == Key.E)
-                        Config.Theme = ThemeManager.Theme.Dark;
-
-                    if (e.Key == Key.Q || e.Key == Key.E)
-                        CheckThemeChanges();
+                        SetTheme(ThemeManager.Theme.Dark);
                 }
             }
 

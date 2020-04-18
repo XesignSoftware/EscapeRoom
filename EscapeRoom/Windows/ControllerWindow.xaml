@@ -22,7 +22,7 @@
     <Grid>
 
         <!-- Content -->
-        <Grid>
+        <Grid x:Name="contentGrid">
 
             <Grid Margin="160,30" VerticalAlignment="Center">
                 <Grid.RowDefinitions>
@@ -130,30 +130,41 @@
 					<TextBlock Padding="17.60,0,0,0">&amp; Xesign Game Engine</TextBlock>-->
 			</TextBlock>
 
-        </Grid>
+            <!-- Splash -->
+            <Grid x:Name="splashGrid" Background="{DynamicResource Background}" Visibility="Hidden">
 
-        <!-- Splash -->
-        <Grid x:Name="splashGrid" Background="{DynamicResource Background}" Visibility="Hidden">
-
-            <TextBlock FontSize="68" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock FontSize="68" VerticalAlignment="Center" HorizontalAlignment="Center">
 				<Run FontWeight="Medium">Escape</Run>
 				<TextBlock FontSize="68" FontWeight="UltraLight" Foreground="{DynamicResource Foreground_Secondary}" Margin="-15,0,0,0">Room</TextBlock>
 			</TextBlock>
 
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,150,0,0" Opacity="0.3">
-                <TextBlock FontSize="32" FontFamily="/Fonts/#Segoe MDL2 Assets" Text="&#xe74c;" VerticalAlignment="Center" />
-                <TextBlock FontSize="32" Margin="15,0,0,0">Powered by Xesign UI</TextBlock>
-                <!-- <TextBlock FontSize="32" Margin="15,0,0,0">Powered by Xesign Game Engine</TextBlock> -->
-            </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,150,0,0" Opacity="0.3">
+                    <TextBlock FontSize="32" FontFamily="/Fonts/#Segoe MDL2 Assets" Text="&#xe74c;" VerticalAlignment="Center" />
+                    <TextBlock FontSize="32" Margin="15,0,0,0">Powered by Xesign UI</TextBlock>
+                    <!-- <TextBlock FontSize="32" Margin="15,0,0,0">Powered by Xesign Game Engine</TextBlock> -->
+                </StackPanel>
 
-            <TextBlock x:Name="splash_errorTextBlock" Foreground="#f44336" Text="Error: %s" Visibility="Visible"
+                <TextBlock x:Name="splash_errorTextBlock" Foreground="#f44336" Text="Error: %s" Visibility="Visible"
 					   FontSize="25" TextWrapping="Wrap"
 					   HorizontalAlignment="Center" VerticalAlignment="Center" Margin="100,360,100,0"/>
 
+            </Grid>
+
+        </Grid>
+
+        <Grid x:Name="contentDialogHost_BlurGrid" Background="{DynamicResource Background}" Visibility="Hidden" >
+            <Rectangle>
+                <Rectangle.Fill>
+                    <VisualBrush Visual="{Binding ElementName=contentGrid}" Stretch="None" AlignmentX="Center" AlignmentY="Center" Viewport="0,0,1.0025,0.9925" />
+                </Rectangle.Fill>
+                <Rectangle.Effect>
+                    <BlurEffect x:Name="contentDialogHost_BlurEffect" Radius="0" RenderingBias="Performance" />
+                </Rectangle.Effect>
+            </Rectangle>
         </Grid>
 
         <!-- ContentDialog host-->
-        <popups:ContentDialogHost x:Name="contentDialogHost" />
+        <popups:ContentDialogHost x:Name="contentDialogHost" DialogRequested="contentDialogHost_DialogRequested" />
 
         <!-- theme changing image -11 -->
         <Image x:Name="themechangeImage" Margin="0" Stretch="None" Visibility="Hidden" />
