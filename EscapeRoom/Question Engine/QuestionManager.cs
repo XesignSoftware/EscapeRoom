@@ -117,11 +117,17 @@ namespace EscapeRoom.QuestionHandling
                     removeSuccessful = true;
                     break;
                 }
-
                 counter++;
             }
 
-            if (!removeSuccessful)
+            int counter2 = 0;
+            foreach (Question quest in list)
+            {
+                quest.QuestID = counter2;
+                counter2++;
+            }
+
+                if (!removeSuccessful)
             {
                 RemoveFailed.Invoke(null, null);
                 return;
