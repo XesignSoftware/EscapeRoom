@@ -124,6 +124,8 @@ namespace EscapeRoom.Windows
         }
         void ThrowException(Exception ex)
         {
+            PlayStoryboard(start_Anim);
+
             QuestionTitle = "An error occured while loading the question.";
             QuestionDescription = "Error: " + ex.Message;
             input_TextField.Visibility = Visibility.Collapsed;
